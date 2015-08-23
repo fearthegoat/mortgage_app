@@ -1,4 +1,10 @@
 Rails.application.routes.draw do
+
+  root 'mortgages#index'
+  resources :mortgages
+
+  get '/calculate', to: 'mortgages#calculate'
+
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
 
