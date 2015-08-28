@@ -3,7 +3,9 @@ class MortgagesController < ApplicationController
   def index
   end
 
-  def calculate
+  def create
+    raise :oops
+    # render 'create.js'
   end
 
 end
