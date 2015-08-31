@@ -10,9 +10,11 @@
         </ul>
       </div>
     </div>
-    <div class="row">
+    <div class="row" id="form_start">
       <div class="col s12 m7">
         <div class="row">
+          <a href="javascript:void(0);" id="add_fixed_rate" class="btn">Fixed Rate Mortgage</a>
+          <a href="javascript:void(0);" id="add_adjustable_rate" class="btn">Adjustable Rate Mortgage</a>
           <div class="input-field col s12 m4">
             <input id="fixed_rate" class="validate" placeholder="i.e: 3.75" step=".125" min="1" max="15" type="number" name="mortgage[rate][]">
             <label for="fixed_rate" class="active">Interest Rate (APR)</label>
@@ -56,7 +58,9 @@
         </div>
         <div class="row">
           <div class="input-field col s12 m2">
-            <input type="submit" name="commit" value="Calculate" id="calculate" class="btn">
+            <button class="btn waves-effect waves-light" type="submit" name="commit" id="calculate" >Calculate
+              <i class="material-icons">send</i>
+            </button>
           </div>
         </div>
       </div>
