@@ -16,6 +16,12 @@
           <a href="javascript:void(0);" id="add_fixed_rate" class="btn">Fixed Rate Mortgage</a>
           <a href="javascript:void(0);" id="add_adjustable_rate" class="btn">Adjustable Rate Mortgage</a>
         </div>
+        <div class="row">
+          <div class="input-field col s12 m4">
+            <input id="loan" class="validate" value="200000" step="5000" min="0" type="number" name="mortgage[loan]">
+            <label for="loan" class="active">Loan Amount</label>
+          </div>
+        </div>
         <div class="row" id="form_start">
           <!-- <div class="input-field col s12 m4">
             <input id="fixed_rate" class="validate" placeholder="i.e: 3.75" step=".125" min="1" max="15" type="number" name="mortgage[rate][]">
