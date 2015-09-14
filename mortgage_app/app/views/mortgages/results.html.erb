@@ -7,6 +7,8 @@
         <% mortgage[:payments].uniq.each do |payment|%>
           <li>payment: <%= number_to_currency(payment.to_f) %></li>
         <%end%>
+        <li>Present Value of payments: <%= number_to_currency(mortgage[:PV_payments]) %></li>
+        <li>Present Value of interest over life of loan: <%= number_to_currency(mortgage[:PV_payments] - mortgage[:loan_amount]) %>
       </ul>
     </li>
   <% end %>
