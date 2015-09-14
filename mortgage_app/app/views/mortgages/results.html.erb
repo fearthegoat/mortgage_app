@@ -1,0 +1,13 @@
+
+<h1>Still working on this</h1>
+<ol>
+  <% @mortgages.each do |mortgage| %>
+    <li>loan amount: <%= number_to_currency(mortgage[:loan_amount]) %>
+      <ul>
+        <% mortgage[:payments].uniq.each do |payment|%>
+          <li>payment: <%= number_to_currency(payment.to_f) %></li>
+        <%end%>
+      </ul>
+    </li>
+  <% end %>
+</ol>
