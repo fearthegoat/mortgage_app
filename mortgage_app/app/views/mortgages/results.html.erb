@@ -1,9 +1,13 @@
 
 <h1>Still working on this</h1>
 <ol>
-  <% @mortgages.each do |mortgage| %>
-    <li>loan amount: <%= number_to_currency(mortgage[:loan_amount]) %>
+  <% @mortgages.each_with_index do |mortgage, index| %>
+  <div class="row">
+    <li><%= (index + 1).ordinalize %> Entered Mortgage</li>
       <ul>
+      <li>loan amount: <%= number_to_currency(mortgage[:loan_amount]) %></li>
+      <li>interest rate: <%= mortgage[:initial_rate] %>%</li>
+      <li>term of loan: <%= mortgage[:term] %> years</li>
         <% mortgage[:payments].uniq.each do |payment|%>
           <li>payment: <%= number_to_currency(payment.to_f) %></li>
         <%end%>
@@ -11,5 +15,6 @@
         <li>Present Value of interest over life of loan: <%= number_to_currency(mortgage[:PV_payments] - mortgage[:loan_amount]) %>
       </ul>
     </li>
+  </div>
   <% end %>
 </ol>
