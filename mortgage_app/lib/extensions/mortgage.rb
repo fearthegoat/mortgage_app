@@ -38,7 +38,7 @@ class Mortgage
   end
 end
 
-discount_rate = 1.5
+
 
 def generate_payments(mortgage)
   payments = []
@@ -46,22 +46,31 @@ def generate_payments(mortgage)
   term_in_months = mortgage[:term]*12
   principal = mortgage[:loan_amount]
   adjustment = mortgage[:years_before_adjustment]*12
-  while term > 0
+  while term_in_months > 0
     current_payment = determine_payment(rate, term_in_months, principal)
     adjustment.times { payments << current_payment }
-    principal = (principal * (1 + rate)^adjustment) - current_payment * (((1+rate)^adjustment-1)/rate)
+    principal = (principal * (1 + rate/(12*100))**adjustment) - current_payment * ((((1+rate/(12*100))**adjustment)-1)/(rate/(12*100)))
+    puts "principal #{principal.round(2)}"
     rate += (mortgage[:max_rate_adjustment]/2)
-    term_in_months +- adjustment
+    term_in_months = term_in_months - adjustment
   end
   mortgage[:payments] = payments
+  discount_payments(mortgage)
 end
 
-def discount_payments(mortgage)
 
+def discount_payments(mortgage)
+  yearly_discount_rate = 1.5  #inflation assumed to be 1.5%
+  monthly_discount_rate = yearly_discount_rate / 12
+  sum_discounted_payments = 0.0
+  mortgage[:payments].each_with_index do |payment, index|
+    sum_discounted_payments = sum_discounted_payments + payment/((1 + monthly_discount_rate/100)**index)
+  end
+  mortgage[:PV_payments] = sum_discounted_payments
 end
 
 def determine_payment(yearly_interest_rate, remaining_term_in_months, remaining_principal)
-  payment = ((yearly_interest_rate/12)*(remaining_principal) / (1 - (1 + (yearly_interest_rate/12))**(-remaining_term_in_months))).round(2) # annuity equation
+  payment = ((yearly_interest_rate/(12*100))*(remaining_principal) / (1 - (1 + (yearly_interest_rate/(12*100)))**(-remaining_term_in_months))).round(2) # annuity equation
   payment
 end
 

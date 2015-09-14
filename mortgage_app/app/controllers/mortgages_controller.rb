@@ -11,20 +11,15 @@ class MortgagesController < ApplicationController
       mortgage_new[:initial_rate] = rate.to_d
       mortgage_new[:term] = params[:mortgage][:term][index].to_i
       mortgage_new[:years_before_adjustment] = params[:mortgage][:years_before_adjustment][index].to_i == 0 ? params[:mortgage][:term][index].to_i : params[:mortgage][:years_before_adjustment][index].to_i
-      mortgage_new[:max_rate_adjustment] = params[:mortgage][:max_rate_adjustment][index].to_i
+      mortgage_new[:max_rate_adjustment] = params[:mortgage][:max_rate_adjustment][index].to_d
       mortgages << mortgage_new
     end
     mortgages.each do |mortgage|
       generate_payments(mortgage)
     end
-      mortgage[:payments] = payments
-    end
-
-
     raise :oops
     # render 'create.js'
   end
-
 end
 
 
