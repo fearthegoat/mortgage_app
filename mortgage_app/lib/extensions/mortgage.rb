@@ -17,13 +17,14 @@ class Mortgage
     @years_before_adjustment = years_before_adjustment
     @interest_paid = 0.0
     @payments_made = 0
+    @payments = []
   end
 
   def interest_payment
     (@remaining_principal * monthly_interest_rate).round(2)
   end
 
-  def principal_payment(payment = @payment)
+  def principal_payment(payment)
     payment - interest_payment
   end
 
@@ -31,9 +32,9 @@ class Mortgage
     @yearly_interest_rate / 12
   end
 
-  def make_payment
+  def make_payment(payment)
     @interest_paid += interest_payment
-    @remaining_principal -= principal_payment
+    @remaining_principal -= principal_payment(payment)
     @payments_made += 1
   end
 end
@@ -58,6 +59,26 @@ def generate_payments(mortgage)
   discount_payments(mortgage)
 end
 
+def set_payments_equal(mortgage, competing_payment)
+  mortgage_new = Mortgage.new(mortgage[:initial_rate], mortgage[:loan_amount],mortgage[:term],mortgage[:max_rate_adjustment],mortgage[:years_before_adjustment])
+  payments = []
+  mortgage[:years_before_adjustment].times do
+    current_payment = determine_payment(rate, term_in_months, principal)
+    current_payment < competing_payment ? current_payment = competing_payment : current_payment = current_payment
+    make_payment(current_payment)
+    return if mortgage_new.remaining_principal <= 0
+    principal = (principal * (1 + rate/(12*100))**adjustment) - current_payment * ((((1+rate/(12*100))**adjustment)-1)/(rate/(12*100)))
+    puts "principal #{principal.round(2)}"
+    rate += (mortgage[:max_rate_adjustment]/2)
+    term_in_months = term_in_months - adjustment
+  end
+end
+
+def make_payment
+  @interest_paid += interest_payment
+  @remaining_principal -= principal_payment
+  @payments_made += 1
+end
 
 def discount_payments(mortgage)
   yearly_discount_rate = 1.5  #inflation assumed to be 1.5%

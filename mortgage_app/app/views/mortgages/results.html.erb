@@ -3,7 +3,7 @@
 <ol>
   <% @mortgages.each_with_index do |mortgage, index| %>
   <div class="row">
-    <li><%= (index + 1).ordinalize %> Entered Mortgage</li>
+    <li><%= (index + 1).ordinalize %> <% if mortgage[:adjustable_rate?] %>Adjustable Rate <% end %>Entered Mortgage</li>
       <ul>
       <li>loan amount: <%= number_to_currency(mortgage[:loan_amount]) %></li>
       <li>interest rate: <%= mortgage[:initial_rate] %>%</li>
