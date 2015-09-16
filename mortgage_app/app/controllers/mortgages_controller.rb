@@ -14,6 +14,7 @@ class MortgagesController < ApplicationController
       mortgage_new[:adjustable_rate?] = params[:mortgage][:years_before_first_adjustment][index].to_i == 0 ? false : true
       mortgage_new[:max_rate_adjustment_period] = params[:mortgage][:max_rate_adjustment_period][index].to_d
       mortgage_new[:max_rate_adjustment_term] = params[:mortgage][:max_rate_adjustment_term][index].to_d
+      mortgage_new[:years_between_adjustments] = params[:mortgage][:years_between_adjustments][index].to_i
       @mortgages << mortgage_new
     end
     @mortgages.each do |mortgage|

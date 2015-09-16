@@ -47,11 +47,19 @@ def generate_payments(mortgage)
   term_in_months = mortgage[:term]*12
   principal = mortgage[:loan_amount]
   adjustment = mortgage[:years_before_first_adjustment]*12
+  current_payment = determine_payment(rate, term_in_months, principal)
+  adjustment.times { payments << current_payment }
+  principal = (principal * (1 + rate/(12*100))**adjustment) - current_payment * ((((1+rate/(12*100))**adjustment)-1)/(rate/(12*100)))
+  rate += (mortgage[:max_rate_adjustment_period]/2)
+  term_in_months = term_in_months - adjustment
+  adjustment = mortgage[:years_between_adjustments]*12
   while term_in_months > 0
+    rate >= mortgage[:initial_rate]+mortgage[:max_rate_adjustment_term] ? rate = mortgage[:initial_rate]+mortgage[:max_rate_adjustment_term] : rate = rate
     current_payment = determine_payment(rate, term_in_months, principal)
     adjustment.times { payments << current_payment }
     principal = (principal * (1 + rate/(12*100))**adjustment) - current_payment * ((((1+rate/(12*100))**adjustment)-1)/(rate/(12*100)))
     puts "principal #{principal.round(2)}"
+    puts "rate #{rate.round(2)}"
     rate += (mortgage[:max_rate_adjustment_period]/2)
     term_in_months = term_in_months - adjustment
   end
