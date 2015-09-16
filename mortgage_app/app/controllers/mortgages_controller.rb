@@ -10,8 +10,8 @@ class MortgagesController < ApplicationController
       mortgage_new[:loan_amount] = params[:mortgage][:loan].to_d
       mortgage_new[:initial_rate] = rate.to_d
       mortgage_new[:term] = params[:mortgage][:term][index].to_i
-      mortgage_new[:years_before_adjustment] = params[:mortgage][:years_before_adjustment][index].to_i == 0 ? params[:mortgage][:term][index].to_i : params[:mortgage][:years_before_adjustment][index].to_i
-      mortgage_new[:adjustable_rate?] = params[:mortgage][:years_before_adjustment][index].to_i == 0 ? false : true
+      mortgage_new[:years_before_first_adjustment] = params[:mortgage][:years_before_first_adjustment][index].to_i == 0 ? params[:mortgage][:term][index].to_i : params[:mortgage][:years_before_first_adjustment][index].to_i
+      mortgage_new[:adjustable_rate?] = params[:mortgage][:years_before_first_adjustment][index].to_i == 0 ? false : true
       mortgage_new[:max_rate_adjustment_period] = params[:mortgage][:max_rate_adjustment_period][index].to_d
       mortgage_new[:max_rate_adjustment_term] = params[:mortgage][:max_rate_adjustment_term][index].to_d
       @mortgages << mortgage_new

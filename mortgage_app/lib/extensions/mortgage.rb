@@ -5,16 +5,16 @@ class Mortgage
   attr_accessor :payment
   attr_accessor :remaining_principal
   attr_accessor :total_interest_base
-  attr_accessor :years_before_adjustment
+  attr_accessor :years_before_first_adjustment
   attr_accessor :max_rate_adjustment_period
 
-  def initialize(interest_rate, principal, term_in_years, max_rate_adjustment_period, years_before_adjustment)
+  def initialize(interest_rate, principal, term_in_years, max_rate_adjustment_period, years_before_first_adjustment)
     @initial_yearly_interest_rate = interest_rate/100
     @beginning_principal = principal
     @remaining_principal = principal
     @term_in_years = term_in_years
     @max_rate_adjustment_period = max_rate_adjustment_period
-    @years_before_adjustment = years_before_adjustment
+    @years_before_first_adjustment = years_before_first_adjustment
     @interest_paid = 0.0
     @payments_made = 0
     @payments = []
@@ -46,7 +46,7 @@ def generate_payments(mortgage)
   rate = mortgage[:initial_rate]
   term_in_months = mortgage[:term]*12
   principal = mortgage[:loan_amount]
-  adjustment = mortgage[:years_before_adjustment_period]*12
+  adjustment = mortgage[:years_before_first_adjustment]*12
   while term_in_months > 0
     current_payment = determine_payment(rate, term_in_months, principal)
     adjustment.times { payments << current_payment }
@@ -60,9 +60,9 @@ def generate_payments(mortgage)
 end
 
 def set_payments_equal(mortgage, competing_payment)
-  mortgage_new = Mortgage.new(mortgage[:initial_rate], mortgage[:loan_amount],mortgage[:term],mortgage[:max_rate_adjustment_period],mortgage[:years_before_adjustment])
+  mortgage_new = Mortgage.new(mortgage[:initial_rate], mortgage[:loan_amount],mortgage[:term],mortgage[:max_rate_adjustment_period],mortgage[:years_before_first_adjustment])
   payments = []
-  mortgage[:years_before_adjustment].times do
+  mortgage[:years_before_first_adjustment].times do
     current_payment = determine_payment(rate, term_in_months, principal)
     current_payment < competing_payment ? current_payment = competing_payment : current_payment = current_payment
     make_payment(current_payment)
