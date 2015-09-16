@@ -50,7 +50,8 @@ def generate_payments(mortgage)
   current_payment = determine_payment(rate, term_in_months, principal)
   adjustment.times { payments << current_payment }
   principal = (principal * (1 + rate/(12*100))**adjustment) - current_payment * ((((1+rate/(12*100))**adjustment)-1)/(rate/(12*100)))
-  rate += (mortgage[:max_rate_adjustment_period]/2)
+  rate_holder = generate_rate_adjustment(rate, mortgage[:years_before_first_adjustment])
+  rate_holder > mortgage[:max_rate_adjustment_period] ? rate += mortgage[:max_rate_adjustment_period] : rate += rate_holder
   term_in_months = term_in_months - adjustment
   adjustment = mortgage[:years_between_adjustments]*12
   while term_in_months > 0
@@ -60,7 +61,8 @@ def generate_payments(mortgage)
     principal = (principal * (1 + rate/(12*100))**adjustment) - current_payment * ((((1+rate/(12*100))**adjustment)-1)/(rate/(12*100)))
     puts "principal #{principal.round(2)}"
     puts "rate #{rate.round(2)}"
-    rate += (mortgage[:max_rate_adjustment_period]/2)
+    rate_holder = generate_rate_adjustment(rate, mortgage[:years_between_adjustments])
+    rate_holder > mortgage[:max_rate_adjustment_period] ? rate += mortgage[:max_rate_adjustment_period] : rate += rate_holder
     term_in_months = term_in_months - adjustment
   end
   mortgage[:payments] = payments
@@ -82,12 +84,6 @@ def set_payments_equal(mortgage, competing_payment)
   end
 end
 
-def make_payment
-  @interest_paid += interest_payment
-  @remaining_principal -= principal_payment
-  @payments_made += 1
-end
-
 def discount_payments(mortgage)
   yearly_discount_rate = 1.5  #inflation assumed to be 1.5%
   monthly_discount_rate = yearly_discount_rate / 12
@@ -103,3 +99,28 @@ def determine_payment(yearly_interest_rate, remaining_term_in_months, remaining_
   payment
 end
 
+def determine_area(rate)
+  height_of_curve = 13.793
+  puts "rate at determine_area entrance #{rate}"
+  if rate < 4
+    area_below_rate = ((rate - 2.5)*height_of_curve)/2
+  elsif rate > 4 && rate < 6
+    area_below_rate = ((2.5*height_of_curve)/2) + (rate - 4)*height_of_curve
+  else
+    area_below_rate = 100 - ((15-rate) * height_of_curve)/2
+  end
+  puts "area_below_rate #{area_below_rate}"
+  area_below_rate
+
+end
+
+def generate_basis_points(rate)
+  basis_points = rand(0..100) - determine_area(rate)
+  puts "basis_points #{basis_points}"
+  basis_points.round.round(3)
+end
+
+def generate_rate_adjustment(rate, term)
+  rate_adjustment = (generate_basis_points(rate) * term)/100
+  rate_adjustment
+end
