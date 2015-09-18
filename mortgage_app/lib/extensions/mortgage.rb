@@ -1,8 +1,8 @@
 class Mortgage
   attr_reader :beginning_principal
   attr_accessor :payments_made
-  attr_accessor :interest
-  attr_accessor :payment
+  attr_accessor :initial_yearly_interest_rate
+  attr_accessor :payments
   attr_accessor :remaining_principal
   attr_accessor :total_interest_base
   attr_accessor :years_before_first_adjustment
@@ -10,17 +10,17 @@ class Mortgage
   attr_accessor :max_rate_adjustment_term
   attr_accessor :yearly_interest_rate
 
-  def initialize(initial_interest_rate, principal, term_in_years, max_rate_adjustment_period, max_rate_adjustment_term, years_before_first_adjustment, years_between_adjustments)
-    @initial_yearly_interest_rate = interest_rate
-    @yearly_interest_rate = interest_rate
-    @beginning_principal = principal
-    @remaining_principal = principal
-    @term_in_years = term_in_years
-    @remaining_term_in_months = term_in_years * 12
-    @max_rate_adjustment_period = max_rate_adjustment_period
-    @max_rate_adjustment_term = max_rate_adjustment_term
-    @years_before_first_adjustment = years_before_first_adjustment
-    @years_between_adjustments = years_between_adjustments
+  def initialize(mortgage)
+    @initial_yearly_interest_rate = mortgage[:initial_rate]
+    @yearly_interest_rate = mortgage[:initial_rate]
+    @beginning_principal = mortgage[:loan_amount]
+    @remaining_principal = mortgage[:loan_amount]
+    @term_in_years = mortgage[:term]
+    @remaining_term_in_months = mortgage[:term] * 12
+    @max_rate_adjustment_period = mortgage[:max_rate_adjustment_period]
+    @max_rate_adjustment_term = mortgage[:max_rate_adjustment_term]
+    @years_before_first_adjustment = mortgage[:years_before_first_adjustment]
+    @years_between_adjustments = mortgage[:years_between_adjustments]
     @interest_paid = 0.0
     @payments_made = 0
     @payments = []
@@ -51,12 +51,12 @@ class Mortgage
       current_payment = determine_payment(@yearly_interest_rate, @remaining_term_in_months, @beginning_principal)
       current_payment = payment unless current_payment > payment
       adjustment.times do
-        return if @remaining_principal >= 0
+        return if @remaining_principal <= 0
         make_payment(current_payment)
       end
       rate_holder = generate_rate_adjustment(@yearly_interest_rate, @years_between_adjustments)
       rate_holder > @max_rate_adjustment_period ? @yearly_interest_rate += @max_rate_adjustment_period : @yearly_interest_rate += rate_holder
-      @yearly_interest_rate >= @initial_yearly_interest_rate + @max_rate_adjustment_term ? @yearly_interest_rate = @initial_yearly_interest_rate + @max_rate_adjustment_term : @yearly_interest_rate = rate
+      @yearly_interest_rate >= @initial_yearly_interest_rate + @max_rate_adjustment_term ? @yearly_interest_rate = @initial_yearly_interest_rate + @max_rate_adjustment_term : @yearly_interest_rate = @yearly_interest_rate
       @remaining_term_in_months -= adjustment
       adjustment = @years_between_adjustments * 12
     end

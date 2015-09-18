@@ -20,6 +20,12 @@ class MortgagesController < ApplicationController
     @mortgages.each do |mortgage|
       generate_payments(mortgage)
     end
+    @mortgages.each do |mortgage|
+      mortgage_new = Mortgage.new(mortgage)
+      mortgage_new.same_payment_outcome(974)
+      mortgage[:payments_matched] = mortgage_new.payments
+      raise :oops
+    end
     render "results"
   end
 
