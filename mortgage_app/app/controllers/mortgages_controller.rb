@@ -5,6 +5,7 @@ class MortgagesController < ApplicationController
 
   def create
     @mortgages = []
+    @fixed_rate_payments = []
     params[:mortgage][:rate].each_with_index do |rate, index|
       mortgage_new = Hash.new(0)
       mortgage_new[:loan_amount] = params[:mortgage][:loan].to_d
@@ -19,13 +20,16 @@ class MortgagesController < ApplicationController
     end
     @mortgages.each do |mortgage|
       generate_payments(mortgage)
+      @fixed_rate_payments << mortgage[:payments][0] unless mortgage[:adjustable_rate?] == true
     end
     @mortgages.each do |mortgage|
-      mortgage_new = Mortgage.new(mortgage)
-      mortgage_new.same_payment_outcome(974)
-      mortgage[:payments_matched] = mortgage_new.payments
-      raise :oops
+      if mortgage[:adjustable_rate?] == true
+        mortgage_new = Mortgage.new(mortgage)
+        mortgage_new.same_payment_outcome(@fixed_rate_payments.max)
+        mortgage[:payments_matched] = mortgage_new.payments
+      end
     end
+    raise :oops
     render "results"
   end
 
@@ -33,6 +37,5 @@ class MortgagesController < ApplicationController
   end
 
 end
-
 
 # [ {initial_rate: 2.25, loan_amount: 200000, term: 30, initial_term: 5, reoccurring_term: 1, rate_change: 2, max_rate_change: 5, payments: [1,1,1,2] }]

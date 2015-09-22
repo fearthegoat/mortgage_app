@@ -1,14 +1,6 @@
 class Mortgage
   attr_reader :beginning_principal
-  attr_accessor :payments_made
-  attr_accessor :initial_yearly_interest_rate
-  attr_accessor :payments
-  attr_accessor :remaining_principal
-  attr_accessor :total_interest_base
-  attr_accessor :years_before_first_adjustment
-  attr_accessor :max_rate_adjustment_period
-  attr_accessor :max_rate_adjustment_term
-  attr_accessor :yearly_interest_rate
+  attr_accessor :payments_made, :initial_yearly_interest_rate, :payments, :remaining_principal, :total_interest_base, :years_before_first_adjustment, :max_rate_adjustment_period,:max_rate_adjustment_term, :yearly_interest_rate
 
   def initialize(mortgage)
     @initial_yearly_interest_rate = mortgage[:initial_rate]
