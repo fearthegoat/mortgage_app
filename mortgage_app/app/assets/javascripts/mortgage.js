@@ -13,11 +13,11 @@ $(document).ready(function() {
       $(wrapper).append('<div class="row"> \
         <div class="input-field col m12 l3"> \
         <input id="fixed_rate" class="validate" placeholder="i.e: 3.75" step=".125" min="1" max="15" type="number" name="mortgage[rate][]"> \
-        <label for="fixed_rate" class="active flow-text">Interest Rate (APR)</label> \
+        <label for="fixed_rate" class="active">Interest Rate (APR)</label> \
         </div> \
         <div class="input-field col m12 l3 offset-l2"> \
         <input id="fixed_term" class="validate" placeholder="i.e.: 30" step="5" min="5" max="30" type="number" name="mortgage[term][]"> \
-        <label for="fixed_term" class="active flow-text">Term (years)</label> \
+        <label for="fixed_term" class="active">Term (years)</label> \
         </div> \
         <a href="#" class="remove_field">Remove</a> \
         <input id="years_before_first_adjustment" type="hidden" value ="0" name="mortgage[years_before_first_adjustment][]"> \
