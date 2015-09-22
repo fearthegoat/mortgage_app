@@ -29,7 +29,6 @@ class MortgagesController < ApplicationController
         mortgage[:payments_matched] = mortgage_new.payments
       end
     end
-    raise :oops
     render "results"
   end
 
