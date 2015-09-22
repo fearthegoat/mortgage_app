@@ -23,7 +23,7 @@ class MortgagesController < ApplicationController
       @fixed_rate_payments << mortgage[:payments][0] unless mortgage[:adjustable_rate?] == true
     end
     @mortgages.each do |mortgage|
-      if mortgage[:adjustable_rate?] == true
+      if mortgage[:adjustable_rate?] == true && @fixed_rate_payments.size > 0
         mortgage_new = Mortgage.new(mortgage)
         mortgage_new.same_payment_outcome(@fixed_rate_payments.max)
         mortgage[:payments_matched] = mortgage_new.payments
