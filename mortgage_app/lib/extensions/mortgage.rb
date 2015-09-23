@@ -27,7 +27,7 @@ class Mortgage
   end
 
   def monthly_interest_rate
-    @yearly_interest_rate / 12
+    @yearly_interest_rate / (12 * 100)
   end
 
   def make_payment(payment)
@@ -40,7 +40,7 @@ class Mortgage
   def same_payment_outcome(payment)
     adjustment = @years_before_first_adjustment * 12
     while @remaining_principal > 0
-      current_payment = determine_payment(@yearly_interest_rate, @remaining_term_in_months, @beginning_principal)
+      current_payment = determine_payment(@yearly_interest_rate, @remaining_term_in_months, @remaining_principal)
       current_payment = payment unless current_payment > payment
       adjustment.times do
         return if @remaining_principal <= 0
@@ -77,8 +77,7 @@ class Mortgage
   end
 
   def generate_rate_adjustment(rate, term)
-    rate_adjustment = (generate_basis_points(rate) * term)/100
-    rate_adjustment
+    (generate_basis_points(rate) * term)/100
   end
 end
 
