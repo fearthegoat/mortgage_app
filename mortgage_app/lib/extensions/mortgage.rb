@@ -19,20 +19,20 @@ class Mortgage
     @basis_points = []
     @random_generator = Random.new(@random_seed)
 
-    if mortgage[:initial_rate] <= 3
-      estimated_base_rate = mortgage[:initial_rate] + 1
-    elsif mortgage[:initial_rate] > 3 && mortgage[:initial_rate] < 10
-      estimated_base_rate = mortgage[:initial_rate] + 0.75
-    elsif mortgage[:initial_rate] >= 10 && mortgage[:initial_rate] < 15
-      estimated_base_rate = mortgage[:initial_rate] + 0.50
+    if mortgage[:years_before_first_adjustment] <= 3
+      @estimated_base_rate = mortgage[:initial_rate] + 1
+    elsif mortgage[:years_before_first_adjustment] > 3 && mortgage[:years_before_first_adjustment] < 10
+      @estimated_base_rate = mortgage[:initial_rate] + 0.75
+    elsif mortgage[:years_before_first_adjustment] >= 10 && mortgage[:years_before_first_adjustment] < 15
+      @estimated_base_rate = mortgage[:initial_rate] + 0.50
     else
-      estimated_base_rate = mortgage[:initial_rate] + 0.25
+      @estimated_base_rate = mortgage[:initial_rate] + 0.25
     end
 
     @max_term.times do
-      rate_holder = generate_basis_points(estimated_base_rate)
+      rate_holder = generate_basis_points(@estimated_base_rate)
       @basis_points << rate_holder
-      estimated_base_rate += rate_holder
+      @estimated_base_rate += rate_holder
     end
 
   end
