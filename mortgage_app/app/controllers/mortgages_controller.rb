@@ -5,7 +5,9 @@ class MortgagesController < ApplicationController
 
   def create
     @mortgages = []
-    @fixed_rate_payments = []
+    @interest_rates = []
+    @random_seed = Random.new_seed
+    @max_term = params[:mortgage][:term].max
     params[:mortgage][:rate].each_with_index do |rate, index|
       mortgage_new = Hash.new(0)
       mortgage_new[:loan_amount] = params[:mortgage][:loan].to_d
@@ -31,6 +33,12 @@ class MortgagesController < ApplicationController
     end
     render "results"
   end
+
+
+
+
+
+
 
   def results
   end
