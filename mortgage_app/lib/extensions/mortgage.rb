@@ -20,20 +20,21 @@ class Mortgage
     @random_generator = Random.new(@random_seed)
 
     if mortgage[:years_before_first_adjustment] <= 3
-      @estimated_base_rate = mortgage[:initial_rate] + 1
+      @estimated_teaser_discount = 1
     elsif mortgage[:years_before_first_adjustment] > 3 && mortgage[:years_before_first_adjustment] < 10
-      @estimated_base_rate = mortgage[:initial_rate] + 0.75
+      @estimated_teaser_discount = 0.75
     elsif mortgage[:years_before_first_adjustment] >= 10 && mortgage[:years_before_first_adjustment] < 15
-      @estimated_base_rate = mortgage[:initial_rate] + 0.50
+      @estimated_teaser_discount = 0.50
     else
-      @estimated_base_rate = mortgage[:initial_rate] + 0.25
+      @estimated_teaser_discount = 0.25
     end
 
     @max_term.times do
-      rate_holder = generate_basis_points(@estimated_base_rate)
+      rate_holder = generate_basis_points(@estimated_teaser_discount + mortgage_new[:initial_rate])
       @basis_points << rate_holder
       @estimated_base_rate += rate_holder
     end
+    @basis_points[0] = @basis_points[0] + @estimated_teaser_discount*100
 
   end
 
@@ -57,7 +58,8 @@ class Mortgage
   end
 
   def same_payment_outcome(payment)
-    adjustment = @years_before_first_adjustment * 12
+    adjustment = @years_before_first_adjustment * 12 #3 * 12
+    current_year = 0
     while @remaining_principal > 0
       current_payment = determine_payment(@yearly_interest_rate, @remaining_term_in_months, @remaining_principal)
       current_payment = payment unless current_payment > payment
@@ -65,10 +67,11 @@ class Mortgage
         return if @remaining_principal <= 0
         make_payment(current_payment)
       end
-      rate_holder = generate_rate_adjustment(@yearly_interest_rate, @years_between_adjustments)
-      rate_holder > @max_rate_adjustment_period ? @yearly_interest_rate += @max_rate_adjustment_period : @yearly_interest_rate += rate_holder
+      rate_holder = @basis_points[current_year..(current_year+(adjustment/12)-1)].inject{|sum,x| sum + x }
+      rate_holder/100 > @max_rate_adjustment_period ? @yearly_interest_rate += @max_rate_adjustment_period : @yearly_interest_rate += rate_holder/100
       @yearly_interest_rate >= @initial_yearly_interest_rate + @max_rate_adjustment_term ? @yearly_interest_rate = @initial_yearly_interest_rate + @max_rate_adjustment_term : @yearly_interest_rate = @yearly_interest_rate
       @remaining_term_in_months -= adjustment
+      current_year += adjustment/12
       adjustment = @years_between_adjustments * 12
     end
   end
