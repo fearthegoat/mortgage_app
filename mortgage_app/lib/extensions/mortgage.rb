@@ -97,6 +97,16 @@ class Mortgage
     @random_generator.rand(0..100) - determine_area(rate)
   end
 
+  def discount_payments(payments)
+    yearly_discount_rate = 1.5  #inflation assumed to be 1.5%
+    monthly_discount_rate = yearly_discount_rate / 12
+    sum_discounted_payments = 0.0
+    payments.each_with_index do |payment, index|
+      sum_discounted_payments = sum_discounted_payments + payment/((1 + monthly_discount_rate/100)**index)
+    end
+    sum_discounted_payments
+  end
+
 end
 
 
@@ -129,20 +139,6 @@ def generate_payments(mortgage)
   discount_payments(mortgage)
 end
 
-def set_payments_equal(mortgage, competing_payment)
-  mortgage_new = Mortgage.new(mortgage[:initial_rate], mortgage[:loan_amount],mortgage[:term],mortgage[:max_rate_adjustment_period],mortgage[:years_before_first_adjustment])
-  mortgage[:years_before_first_adjustment].times do
-    current_payment = determine_payment(rate, term_in_months, principal)
-    current_payment < competing_payment ? current_payment = competing_payment : current_payment = current_payment
-    make_payment(current_payment)
-    return if mortgage_new.remaining_principal <= 0
-    principal = (principal * (1 + rate/(12*100))**adjustment) - current_payment * ((((1+rate/(12*100))**adjustment)-1)/(rate/(12*100)))
-    puts "principal #{principal.round(2)}"
-    rate += (mortgage[:max_rate_adjustment_period]/2)
-    term_in_months = term_in_months - adjustment
-  end
-end
-
 def discount_payments(mortgage)
   yearly_discount_rate = 1.5  #inflation assumed to be 1.5%
   monthly_discount_rate = yearly_discount_rate / 12
@@ -160,7 +156,6 @@ end
 
 def determine_area(rate)
   height_of_curve = 13.793
-  puts "rate at determine_area entrance #{rate}"
   if rate < 4
     area_below_rate = ((rate - 2.5)*height_of_curve)/2
   elsif rate > 4 && rate < 6
@@ -168,14 +163,12 @@ def determine_area(rate)
   else
     area_below_rate = 100 - ((15-rate) * height_of_curve)/2
   end
-  puts "area_below_rate #{area_below_rate}"
   area_below_rate
 
 end
 
 def generate_basis_points(rate)
   basis_points = rand(0..100) - determine_area(rate)
-  puts "basis_points #{basis_points}"
   basis_points.round.round(3)
 end
 

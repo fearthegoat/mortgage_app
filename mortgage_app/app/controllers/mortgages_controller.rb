@@ -28,6 +28,7 @@ class MortgagesController < ApplicationController
       if mortgage[:adjustable_rate?] == true && @fixed_rate_payments.size > 0
         mortgage_new = Mortgage.new(mortgage)
         mortgage_new.same_payment_outcome(@fixed_rate_payments.max)
+        mortgagee[:PV_payments_matched] = mortgage_new.discount_payments(mortgage_new.payments)
         mortgage[:payments_matched] = mortgage_new.payments
       end
     end
