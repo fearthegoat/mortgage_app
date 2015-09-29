@@ -32,13 +32,13 @@ class Mortgage
     else
       @estimated_teaser_discount = 0.25
     end
-
     30.times do  # 30 because the max term in years possible
-      rate_holder = generate_basis_points(@estimated_teaser_discount + mortgage[:initial_rate])
+      rate_holder = (generate_basis_points(@estimated_teaser_discount + mortgage[:initial_rate]))/100
       @basis_points << rate_holder
       @estimated_teaser_discount += rate_holder
     end
-    @basis_points[0] = @basis_points[0] + @estimated_teaser_discount*100
+
+    @basis_points[0] = @basis_points[0] + @yearly_interest_rate
   end
 
   def interest_payment
@@ -55,7 +55,7 @@ class Mortgage
 
   def make_payment(payment)
     @interest_paid += interest_payment
-    @remaining_principal -= principal_payment(payment)
+    @remaining_principal = @remaining_principal.round(4) - principal_payment(payment)
     @payments_made += 1
     @payments << payment
   end
@@ -77,30 +77,38 @@ class Mortgage
     end
     @PV_payments_normal = discount_payments(@payments)
     @payments_normal = @payments
-    @payments = []
+    reset_variables
   end
 
   def same_payment_outcome(payment)
     adjustment = @years_before_first_adjustment * 12 #3 * 12
     current_year = 0
-    while @remaining_principal > 5
+    puts "starting remaining principal #{@remaining_principal}"
+    while @remaining_principal > 0
+      puts "yearly interest rate #{@yearly_interest_rate}"
       current_payment = determine_payment(@yearly_interest_rate, @remaining_term_in_months, @remaining_principal)
+      current_payment = current_payment.round(2)
       current_payment = payment unless current_payment > payment
-      adjustment.times do
-        return if @remaining_principal <= 0
+      puts "current payment #{current_payment}"
+      counter = 0
+      while @remaining_principal > 0 && counter <= adjustment
         make_payment(current_payment)
+        counter += 1
       end
       rate_holder = @basis_points[current_year..(current_year+(adjustment/12)-1)].inject{|sum,x| sum + x }
-      rate_holder/100 > @max_rate_adjustment_period ? @yearly_interest_rate += @max_rate_adjustment_period : @yearly_interest_rate += rate_holder/100
-      @yearly_interest_rate >= @initial_yearly_interest_rate + @max_rate_adjustment_term ? @yearly_interest_rate = @initial_yearly_interest_rate + @max_rate_adjustment_term : @yearly_interest_rate = @yearly_interest_rate
+      puts "rate_holder #{rate_holder}"
+      rate_holder > @max_rate_adjustment_period ? @yearly_interest_rate += @max_rate_adjustment_period : @yearly_interest_rate += rate_holder
+      @yearly_interest_rate = @initial_yearly_interest_rate + @max_rate_adjustment_term if @yearly_interest_rate >= @initial_yearly_interest_rate + @max_rate_adjustment_term
       @remaining_term_in_months -= adjustment
       current_year += adjustment/12
       adjustment = @years_between_adjustments * 12
+      puts "remaining_principal #{@remaining_principal.round(2)}"
     end
+    raise :oops
+
     @PV_payments_matched = discount_payments(@payments)
     @payments_matched = @payments
-    raise :oops
-    @payments = []
+    reset_variables
   end
 
 
@@ -135,6 +143,12 @@ class Mortgage
     sum_discounted_payments
   end
 
+  def reset_variables
+    @payments = []
+    @remaining_principal = @beginning_principal
+    @remaining_term_in_months = @term_in_years * 12
+    @yearly_interest_rate = @initial_yearly_interest_rate
+  end
 end
 
 

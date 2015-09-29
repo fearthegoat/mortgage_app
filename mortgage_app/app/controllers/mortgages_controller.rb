@@ -26,12 +26,12 @@ class MortgagesController < ApplicationController
       generate_payments(mortgage)
       @fixed_rate_payments << mortgage[:payments][0]
     end
-    @mortgages.each do |mortgage|
+    @mortgages.select { |mortgage| mortgage[:adjustable_rate?] == true }.each do |mortgage|
       mortgage_new = Mortgage.new(mortgage)
       mortgage_new.generate_normal_payments
       mortgage[:payments] = mortgage_new.payments_normal
       mortgage[:PV_payments] = mortgage_new.PV_payments_normal
-        if mortgage[:adjustable_rate?] == true && @fixed_rate_payments.size > 0
+      if @fixed_rate_payments.size > 0
         mortgage_new.same_payment_outcome(@fixed_rate_payments.max)
         mortgage[:PV_payments_matched] = mortgage_new.PV_payments_matched
         mortgage[:payments_matched] = mortgage_new.payments_matched
