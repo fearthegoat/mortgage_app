@@ -43,4 +43,5 @@ class MortgagesController < ApplicationController
   def results
   end
 
+
 end

@@ -63,14 +63,17 @@ class Mortgage
   def generate_normal_payments
     adjustment = @years_before_first_adjustment * 12
     current_year = 0
+    puts "remaining_principal #{@remaining_principal.round(2)}"
     while @remaining_principal > 5
       current_payment = determine_payment(@yearly_interest_rate, @remaining_term_in_months, @remaining_principal)
+      puts "current payment #{current_payment}"
       adjustment.times do
         make_payment(current_payment)
       end
       rate_holder = @basis_points[current_year..(current_year+(adjustment/12)-1)].inject{|sum,x| sum + x }
-      rate_holder/100 > @max_rate_adjustment_period ? @yearly_interest_rate += @max_rate_adjustment_period : @yearly_interest_rate += rate_holder/100
-      @yearly_interest_rate >= @initial_yearly_interest_rate + @max_rate_adjustment_term ? @yearly_interest_rate = @initial_yearly_interest_rate + @max_rate_adjustment_term : @yearly_interest_rate = @yearly_interest_rate
+      puts "rate_holder #{rate_holder}"
+      rate_holder > @max_rate_adjustment_period ? @yearly_interest_rate += @max_rate_adjustment_period : @yearly_interest_rate += rate_holder
+      @yearly_interest_rate = @initial_yearly_interest_rate + @max_rate_adjustment_term if @yearly_interest_rate >= @initial_yearly_interest_rate + @max_rate_adjustment_term
       @remaining_term_in_months -= adjustment
       current_year += adjustment/12
       adjustment = @years_between_adjustments * 12
@@ -81,20 +84,27 @@ class Mortgage
   end
 
   def same_payment_outcome(payment)
+    puts ""
+    puts ""
+    puts ""
+    puts ""
+    puts ""
+    puts ""
     adjustment = @years_before_first_adjustment * 12 #3 * 12
     current_year = 0
     puts "starting remaining principal #{@remaining_principal}"
-    while @remaining_principal > 0
+    while @remaining_principal > 1
       puts "yearly interest rate #{@yearly_interest_rate}"
       current_payment = determine_payment(@yearly_interest_rate, @remaining_term_in_months, @remaining_principal)
       current_payment = current_payment.round(2)
       current_payment = payment unless current_payment > payment
       puts "current payment #{current_payment}"
       counter = 0
-      while @remaining_principal > 0 && counter <= adjustment
+      while @remaining_principal > 1 && counter < adjustment
         make_payment(current_payment)
         counter += 1
       end
+      puts "payments size #{@payments.size}"
       rate_holder = @basis_points[current_year..(current_year+(adjustment/12)-1)].inject{|sum,x| sum + x }
       puts "rate_holder #{rate_holder}"
       rate_holder > @max_rate_adjustment_period ? @yearly_interest_rate += @max_rate_adjustment_period : @yearly_interest_rate += rate_holder
@@ -104,7 +114,6 @@ class Mortgage
       adjustment = @years_between_adjustments * 12
       puts "remaining_principal #{@remaining_principal.round(2)}"
     end
-    raise :oops
 
     @PV_payments_matched = discount_payments(@payments)
     @payments_matched = @payments
@@ -118,11 +127,9 @@ class Mortgage
 
 
   def determine_area(rate)
-    height_of_curve = 13.793
-    if rate < 4
-      area_below_rate = ((rate - 2.5)*height_of_curve)/2
-    elsif rate > 4 && rate < 6
-      area_below_rate = ((2.5*height_of_curve)/2) + (rate - 4)*height_of_curve
+    height_of_curve = 12.5
+    if rate <= 6
+      area_below_rate = ((rate - 2.5)*height_of_curve)
     else
       area_below_rate = 100 - ((15-rate) * height_of_curve)/2
     end

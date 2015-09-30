@@ -9,7 +9,7 @@
       <li>interest rate: <%= mortgage[:initial_rate] %>%</li>
       <li>term of loan: <%= mortgage[:term] %> years</li>
         <% mortgage[:payments].uniq.each do |payment|%>
-          <li>Principal and Interest Payment: <%= number_to_currency(payment.to_f) %></li>
+          <li><%= mortgage[:payments].select { |p| p == payment}.size %> Principal and Interest Payments: <%= number_to_currency(payment.to_f) %></li>
         <%end%>
         <li>Present Value of payments: <%= number_to_currency(mortgage[:PV_payments]) %></li>
         <li>Present Value of interest over life of loan: <%= number_to_currency(mortgage[:PV_payments] - mortgage[:loan_amount]) %>
