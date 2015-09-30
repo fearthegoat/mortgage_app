@@ -1,20 +1,51 @@
-
-<h1>Still working on this</h1>
-<ol>
-  <% @mortgages.each_with_index do |mortgage, index| %>
-  <div class="row">
-    <li><% if mortgage[:adjustable_rate?] %>Adjustable Rate <% else %>Fixed Rate <% end %> Mortgage</li>
-      <ul>
-      <li>loan amount: <%= number_to_currency(mortgage[:loan_amount]) %></li>
-      <li>interest rate: <%= mortgage[:initial_rate] %>%</li>
-      <li>term of loan: <%= mortgage[:term] %> years</li>
-        <% mortgage[:payments].uniq.each do |payment|%>
-          <li><%= mortgage[:payments].select { |p| p == payment}.size %> Principal and Interest Payments: <%= number_to_currency(payment.to_f) %></li>
-        <%end%>
-        <li>Present Value of payments: <%= number_to_currency(mortgage[:PV_payments]) %></li>
-        <li>Present Value of interest over life of loan: <%= number_to_currency(mortgage[:PV_payments] - mortgage[:loan_amount]) %>
-      </ul>
-    </li>
+<% @mortgages.each_with_index do |mortgage, index| %>
+  <div class="section">
+    <% if mortgage[:adjustable_rate?] %>
+      <div class="row">
+        <h2 class="center brown-text">Adjustable Rate Mortgage</h2>
+        <p class="center brown-text"><%= number_to_currency(mortgage[:loan_amount]) %> Loan Amount</p>
+        <div class="col s12 m4">
+          <div class="icon-block">
+            <h3 class="center brown-text">Predicted Outcome</h3>
+            <h5 class="center">Present Value of interest: <%= number_to_currency( mortgage[:PV_payments] - mortgage[:loan_amount]) %></h5>
+            <% mortgage[:payments].uniq.each do |payment|%>
+            <p class="center light"><%= mortgage[:payments].select { |p| p == payment}.size %> Principal and Interest Payments: <%= number_to_currency(payment.to_f) %></p>
+          <%end%>
+          </div>
+        </div>
+        <div class="col s12 m4">
+          <div class="icon-block">
+            <h3 class="center brown-text">Worst Case Scenario</h3>
+            <h5 class="center">Work in Progress</h5>
+            <p class="light"></p>
+          </div>
+        </div>
+        <% if mortgage[:PV_payments_matched] != 0 %>
+          <div class="col s12 m4">
+            <div class="icon-block">
+              <h4 class="center brown-text">Matching Fixed Rate Payment</h4>
+              <h5 class="center">Present Value of interest: <%= number_to_currency( mortgage[:PV_payments_matched] - mortgage[:loan_amount]) %></h5>
+              <% mortgage[:payments_matched].uniq.each do |payment|%>
+                <p class="center light"><%= mortgage[:payments_matched].select { |p| p == payment}.size %>  Principal and Interest Payments: <%= number_to_currency(payment.to_f) %></p>
+              <% end %>
+            </div>
+          </div>
+        <% end %>
+      </div>
+      <% else %>
+      <div class="row">
+        <h2 class="center brown-text">Fixed Rate Mortgage</h2>
+        <p class="center brown-text"><%= number_to_currency(mortgage[:loan_amount]) %> Loan Amount</p>
+        <div class="col s12 m4">
+          <div class="icon-block">
+            <h3 class="center brown-text">Normal Case</h3>
+            <h5 class="center">Present Value of interest: <%= number_to_currency( mortgage[:PV_payments] - mortgage[:loan_amount]) %></h5>
+            <% mortgage[:payments].uniq.each do |payment|%>
+            <p class="center light"><%= mortgage[:payments].select { |p| p == payment}.size %> Principal and   Interest Payments: <%= number_to_currency(payment.to_f) %></p>
+          <%end%>
+          </div>
+        </div>
+      </div>
+    <% end %>
   </div>
-  <% end %>
-</ol>
+<% end %>
