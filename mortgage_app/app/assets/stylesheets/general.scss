@@ -1,0 +1,20 @@
+.section-results {
+  background: linear-gradient(to bottom, rgba(white,0.7) 0%,rgba(white,0.7) 100%), url(image-path('house.JPG')) repeat 0 0;
+  background-size: cover;
+}
+
+.my-container {
+  margin: auto;
+  width: 83%;
+}
+
+.flexy-row {
+  display: flex;
+  align-items: stretch;
+
+  .flexy-column {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+}
