@@ -63,11 +63,12 @@ class Mortgage
   def generate_normal_payments
     adjustment = @years_before_first_adjustment * 12
     current_year = 0
-    while @remaining_principal > 5
+    while @remaining_term_in_months > 0
       current_payment = determine_payment(@yearly_interest_rate, @remaining_term_in_months, @remaining_principal)
       adjustment.times do
-        make_payment(current_payment)
+        @payments << current_payment
       end
+      @remaining_principal = (@remaining_principal.round(4) * (1 + @yearly_interest_rate/(12*100))**adjustment) - current_payment * ((((1+@yearly_interest_rate/(12*100))**adjustment)-1)/(@yearly_interest_rate/(12*100)))
       rate_holder = @basis_points[current_year..(current_year+(adjustment/12)-1)].inject{|sum,x| sum + x }
       rate_holder > @max_rate_adjustment_period ? @yearly_interest_rate += @max_rate_adjustment_period : @yearly_interest_rate += rate_holder
       @yearly_interest_rate = @initial_yearly_interest_rate + @max_rate_adjustment_term if @yearly_interest_rate >= @initial_yearly_interest_rate + @max_rate_adjustment_term
