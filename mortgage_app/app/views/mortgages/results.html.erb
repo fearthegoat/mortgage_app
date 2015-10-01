@@ -10,14 +10,16 @@
             <h5 class="center">Present Value of interest: <%= number_to_currency( mortgage[:PV_payments] - mortgage[:loan_amount]) %></h5>
             <% mortgage[:payments].uniq.each do |payment|%>
             <p class="center light"><%= mortgage[:payments].select { |p| p == payment}.size %> Principal and Interest Payments: <%= number_to_currency(payment.to_f) %></p>
-          <%end%>
+          <% end %>
           </div>
         </div>
         <div class="col s12 m4">
           <div class="icon-block">
             <h3 class="center brown-text">Worst Case Scenario</h3>
-            <h5 class="center">Work in Progress</h5>
-            <p class="light"></p>
+            <h5 class="center">Present Value of interest: <%= number_to_currency( mortgage[:PV_payments_worst] - mortgage[:loan_amount]) %></h5>
+            <% mortgage[:payments_worst].uniq.each do |payment|%>
+            <p class="center light"><%= mortgage[:payments_worst].select { |p| p == payment}.size %> Principal and Interest Payments: <%= number_to_currency(payment.to_f) %></p>
+          <% end %>
           </div>
         </div>
         <% if mortgage[:PV_payments_matched] != 0 %>

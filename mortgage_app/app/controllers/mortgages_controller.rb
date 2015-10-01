@@ -31,6 +31,9 @@ class MortgagesController < ApplicationController
       mortgage_new.generate_normal_payments
       mortgage[:payments] = mortgage_new.payments_normal
       mortgage[:PV_payments] = mortgage_new.PV_payments_normal
+      mortgage_new.worst_case_scenario
+      mortgage[:PV_payments_worst] = mortgage_new.PV_payments_worst
+      mortgage[:payments_worst] = mortgage_new.payments_worst
       if @fixed_rate_payments.size > 0
         mortgage_new.same_payment_outcome(@fixed_rate_payments.max)
         mortgage[:PV_payments_matched] = mortgage_new.PV_payments_matched
