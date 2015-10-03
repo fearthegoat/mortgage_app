@@ -32,12 +32,18 @@ class Mortgage
     else
       @estimated_teaser_discount = 0.25
     end
+
+    number_times_to_calculate = 20
     30.times do  # 30 because the max term in years possible
-      rate_holder = (generate_basis_points(@estimated_teaser_discount + mortgage[:initial_rate]))/100
+      calculation_holder = []
+      number_times_to_calculate.times do
+        calculation_holder << (generate_basis_points(@estimated_teaser_discount + mortgage[:initial_rate]))/100
+      end
+      summed = calculation_holder.inject {|sum,x| sum + x }
+      rate_holder = summed / number_times_to_calculate # finds average
       @basis_points << rate_holder
       @estimated_teaser_discount += rate_holder
     end
-
     @basis_points[0] = @basis_points[0] + @yearly_interest_rate
   end
 
