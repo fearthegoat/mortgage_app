@@ -4,15 +4,15 @@
 <% @mortgages.each_with_index do |mortgage, index| %>
     <% if mortgage[:adjustable_rate?] %>
       <div class="card-panel">
-        <h2 class="center brown-text">Adjustable Rate Mortgage</h2>
+        <h3 class="center brown-text"><%= mortgage[:years_before_first_adjustment] %>/<%= mortgage[:years_between_adjustments] %> Adjustable Rate Mortgage (ARM)</h3>
         <p class="center brown-text"><%= number_to_currency(mortgage[:loan_amount]) %> Loan Amount</p>
         <div class="row flexy-row">
           <div class="col s12 m4 flexy-column">
-              <h3 class="center brown-text">Predicted Outcome</h3>
+              <h4 class="center brown-text">Predicted Outcome</h4>
               <h5 class="center">Present Value of interest: <%= number_to_currency( mortgage[:PV_payments] - mortgage[:loan_amount]) %></h5>
           </div>
           <div class="col s12 m4 flexy-column">
-              <h3 class="center brown-text">Worst Case Scenario</h3>
+              <h4 class="center brown-text">Worst Case Scenario</h4>
               <h5 class="center">Present Value of interest: <%= number_to_currency( mortgage[:PV_payments_worst] - mortgage[:loan_amount]) %></h5>
           </div>
           <% if mortgage[:PV_payments_matched] != 0 %>
@@ -72,10 +72,10 @@
       <% else %>
       <div class="card-panel">
       <div class="row">
-        <h2 class="center brown-text">Fixed Rate Mortgage</h2>
+        <h3 class="center brown-text">Fixed Rate Mortgage</h3>
         <p class="center brown-text"><%= number_to_currency(mortgage[:loan_amount]) %> Loan Amount</p>
         <div class="col s12 m4">
-            <h3 class="center brown-text">Normal Case</h3>
+            <h4 class="center brown-text">Normal Case</h4>
             <h5 class="center">Present Value of interest: <%= number_to_currency( mortgage[:PV_payments] - mortgage[:loan_amount]) %></h5>
             <% mortgage[:payments].uniq.each do |payment|%>
             <p class="center light"><%= mortgage[:payments].select { |p| p == payment}.size %> Principal & Interest Payments: <%= number_to_currency(payment.to_f) %></p>
