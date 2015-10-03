@@ -40,7 +40,8 @@ class Mortgage
         calculation_holder << (generate_basis_points(@estimated_teaser_discount + mortgage[:initial_rate]))/100
       end
       summed = calculation_holder.inject {|sum,x| sum + x }
-      rate_holder = summed / number_times_to_calculate # finds average
+      rate_holder = (summed / number_times_to_calculate).round(5) # finds average
+      puts "rate holder #{rate_holder}"
       @basis_points << rate_holder
       @estimated_teaser_discount += rate_holder
     end
@@ -61,7 +62,7 @@ class Mortgage
 
   def make_payment(payment)
     @interest_paid += interest_payment
-    @remaining_principal = @remaining_principal.round(4) - principal_payment(payment)
+    @remaining_principal = (@remaining_principal - principal_payment(payment)).round(3)
     @payments_made += 1
     @payments << payment
   end
@@ -74,7 +75,7 @@ class Mortgage
       adjustment.times do
         @payments << current_payment
       end
-      @remaining_principal = (@remaining_principal.round(4) * (1 + @yearly_interest_rate/(12*100))**adjustment) - current_payment * ((((1+@yearly_interest_rate/(12*100))**adjustment)-1)/(@yearly_interest_rate/(12*100)))
+      @remaining_principal = ((@remaining_principal.round(4) * (1 + @yearly_interest_rate/(12*100))**adjustment) - current_payment * ((((1+@yearly_interest_rate/(12*100))**adjustment)-1)/(@yearly_interest_rate/(12*100)))).round(3)
       rate_holder = @basis_points[current_year..(current_year+(adjustment/12)-1)].inject{|sum,x| sum + x }
       rate_holder > @max_rate_adjustment_period ? @yearly_interest_rate += @max_rate_adjustment_period : @yearly_interest_rate += rate_holder
       @yearly_interest_rate = @initial_yearly_interest_rate + @max_rate_adjustment_term if @yearly_interest_rate >= @initial_yearly_interest_rate + @max_rate_adjustment_term
@@ -119,7 +120,7 @@ class Mortgage
         @payments << current_payment
         puts "current_payment #{current_payment}"
       end
-      @remaining_principal = (@remaining_principal * (1 + @yearly_interest_rate/(12*100))**adjustment) - current_payment * ((((1+@yearly_interest_rate/(12*100))**adjustment)-1)/(@yearly_interest_rate/(12*100)))
+      @remaining_principal = ((@remaining_principal * (1 + @yearly_interest_rate/(12*100))**adjustment) - current_payment * ((((1+@yearly_interest_rate/(12*100))**adjustment)-1)/(@yearly_interest_rate/(12*100)))).round(3)
       puts "remaining principal #{@remaining_principal}"
       @yearly_interest_rate += @max_rate_adjustment_period
       @yearly_interest_rate = @initial_yearly_interest_rate + @max_rate_adjustment_term if @yearly_interest_rate > @initial_yearly_interest_rate + @max_rate_adjustment_term
@@ -132,27 +133,6 @@ class Mortgage
     @payments_worst = @payments
     reset_variables
   end
-      # if mortgage[:adjustable_rate?]
-  #   @random_generator = Random.new(@random_seed)
-  #   @basis_points = []
-  #   generate_basis_points(mortgage)
-  #   find_teaser_rate(mortgage)
-  #   principal = (principal * (1 + rate/(12*100))**adjustment) - current_payment * ((((1+rate/(12*100))**adjustment)-1)/(rate/(12*100)))
-  #   rate_holder = generate_rate_adjustment(rate, mortgage[:years_before_first_adjustment])
-  #   rate_holder > mortgage[:max_rate_adjustment_period] ? rate += mortgage[:max_rate_adjustment_period] : rate += rate_holder
-  #   term_in_months = term_in_months - adjustment
-  #   adjustment = mortgage[:years_between_adjustments]*12
-  #   while term_in_months > 0
-  #     rate >= mortgage[:initial_rate]+mortgage[:max_rate_adjustment_term] ? rate = mortgage[:initial_rate]+mortgage[:max_rate_adjustment_term] : rate = rate
-  #     current_payment = determine_payment(rate, term_in_months, principal)
-  #     adjustment.times { payments << current_payment }
-  #     principal = (principal * (1 + rate/(12*100))**adjustment) - current_payment * ((((1+rate/(12*100))**adjustment)-1)/(rate/(12*100)))
-  #     rate_holder = generate_rate_adjustment(rate, mortgage[:years_between_adjustments])
-  #     rate_holder > mortgage[:max_rate_adjustment_period] ? rate += mortgage[:max_rate_adjustment_period] : rate += rate_holder
-  #     term_in_months = term_in_months - adjustment
-  #   end
-  # end
-
 
   def determine_payment(yearly_interest_rate, remaining_term_in_months, remaining_principal)
     ((yearly_interest_rate/(12*100))*(remaining_principal) / (1 - (1 + (yearly_interest_rate/(12*100)))**(-remaining_term_in_months))).round(2) # annuity equation
