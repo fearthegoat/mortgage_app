@@ -1,89 +1,100 @@
 <div class="section-results">
   <div class="my-container">
-
-<% @mortgages.each_with_index do |mortgage, index| %>
-    <% if mortgage[:adjustable_rate?] %>
-      <div class="card-panel">
-        <h3 class="center brown-text"><%= mortgage[:years_before_first_adjustment] %>/<%= mortgage[:years_between_adjustments] %> Adjustable Rate Mortgage (ARM)</h3>
-        <p class="center brown-text"><%= number_to_currency(mortgage[:loan_amount]) %> Loan Amount</p>
-        <div class="row flexy-row">
-          <div class="col s12 m4 flexy-column">
-              <h4 class="center brown-text">Predicted Outcome</h4>
-              <h5 class="center">Present Value of interest: <%= number_to_currency( mortgage[:PV_payments] - mortgage[:loan_amount]) %></h5>
-          </div>
-          <div class="col s12 m4 flexy-column">
-              <h4 class="center brown-text">Worst Case Scenario</h4>
-              <h5 class="center">Present Value of interest: <%= number_to_currency( mortgage[:PV_payments_worst] - mortgage[:loan_amount]) %></h5>
-          </div>
-          <% if mortgage[:PV_payments_matched] != 0 %>
-            <div class="col s12 m4 flexy-column">
-                <h4 class="center brown-text">Matching Fixed Rate Payment</h4>
-                <h5 class="center">Present Value of interest: <%= number_to_currency( mortgage[:PV_payments_matched] - mortgage[:loan_amount]) %></h5>
-
-            </div>
-          <% end %>
+    <div class = "row">
+      <div class = "col s12 m3">
+        <div class="card-panel">
+          <h2 class="center brown-text">Summary</h2>
+        <% if @sale_date %>
+          <p>Sale Date: <%= @sale_date/12 %> years</p>
+          <%= line_chart @mortgages.first[:interest_normal], discrete: true, library: {backgroundColor: "#eee", title: "Graph of Change-in Cash Position"} %>
+        <% end %>
         </div>
-
-        <div class="row">
-          <div class="col s12 m4">
-             <ul class="collapsible" data-collapsible="accordion">
-                <li>
-                  <div class="collapsible-header"><i class="fa fa-dollar"></i>View Payments</div>
-                  <div class="collapsible-body">
-                    <% mortgage[:payments].uniq.each do |payment|%>
-                      <p><%= mortgage[:payments].select { |p| p == payment}.size %> Principal & Interest Payments: <%= number_to_currency(payment.to_f) %></p>
-                    <% end %>
-                  </div>
-                </li>
-              </ul>
-          </div>
-          <div class="col s12 m4">
-            <ul class="collapsible" data-collapsible="accordion">
-                <li>
-                  <div class="collapsible-header"><i class="fa fa-dollar"></i>View Payments</div>
-                  <div class="collapsible-body">
-                    <% mortgage[:payments_worst].uniq.each do |payment|%>
-                      <p><%= mortgage[:payments_worst].select { |p| p == payment}.size %> Principal & Interest Payments: <%= number_to_currency(payment.to_f) %></p>
-                    <% end %>
-                  </div>
-                </li>
-              </ul>
-
-          </div>
-
-          <% if mortgage[:PV_payments_matched] != 0 %>
-            <div class="col s12 m4">
-                <ul class="collapsible" data-collapsible="accordion">
-                  <li>
-                    <div class="collapsible-header"><i class="fa fa-dollar"></i>View Payments</div>
-                    <div class="collapsible-body">
-                      <% mortgage[:payments_matched].uniq.each do |payment|%>
-                        <p><%= mortgage[:payments_matched].select { |p| p == payment}.size %> Principal & Interest Payments: <%= number_to_currency(payment.to_f) %></p>
-                      <% end %>
-                    </div>
-                  </li>
-                </ul>
-            </div>
-          <% end %>
-
-        </div>
-
       </div>
-      <% else %>
-      <div class="card-panel">
-      <div class="row">
-        <h3 class="center brown-text">Fixed Rate Mortgage</h3>
-        <p class="center brown-text"><%= number_to_currency(mortgage[:loan_amount]) %> Loan Amount</p>
-        <div class="col s12 m4">
-            <h4 class="center brown-text">Normal Case</h4>
-            <h5 class="center">Present Value of interest: <%= number_to_currency( mortgage[:PV_payments] - mortgage[:loan_amount]) %></h5>
-            <% mortgage[:payments_normal].uniq.each do |payment|%>
-            <p class="center light"><%= mortgage[:payments_normal].select { |p| p == payment}.size %> Principal & Interest Payments: <%= number_to_currency(payment.to_f) %></p>
-          <%end%>
-          </div>
+      <div class = "col s12 m9">
+        <% @mortgages.each_with_index do |mortgage, index| %>
+            <% if mortgage[:adjustable_rate?] %>
+              <div class="card-panel">
+                <h3 class="center brown-text"><%= mortgage[:years_before_first_adjustment] %>/<%= mortgage[:years_between_adjustments] %>         Adjustable Rate Mortgage (ARM)</h3>
+                <p class="center brown-text"><%= number_to_currency(mortgage[:loan_amount]) %> Loan Amount</p>
+                <div class="row flexy-row">
+                  <div class="col s12 m4 flexy-column">
+                      <h4 class="center brown-text">Predicted Outcome</h4>
+                      <h5 class="center">Present Value of interest: <%= number_to_currency( mortgage[:PV_payments] - mortgage[:loan_amount]) %></h5>
+                  </div>
+                  <div class="col s12 m4 flexy-column">
+                      <h4 class="center brown-text">Worst Case Scenario</h4>
+                      <h5 class="center">Present Value of interest: <%= number_to_currency( mortgage[:PV_payments_worst] - mortgage[:loan_amount])        %></h5>
+                  </div>
+                  <% if mortgage[:PV_payments_matched] != 0 %>
+                    <div class="col s12 m4 flexy-column">
+                        <h4 class="center brown-text">Matching Fixed Rate Payment</h4>
+                        <h5 class="center">Present Value of interest: <%= number_to_currency( mortgage[:PV_payments_matched] - mortgage[:loan_amount        ]) %></h5>
+
+                    </div>
+                  <% end %>
+                </div>
+
+                <div class="row">
+                  <div class="col s12 m4">
+                     <ul class="collapsible" data-collapsible="accordion">
+                        <li>
+                          <div class="collapsible-header"><i class="fa fa-dollar"></i>View Payments</div>
+                          <div class="collapsible-body">
+                            <% mortgage[:payments].uniq.each do |payment|%>
+                              <p><%= mortgage[:payments].select { |p| p == payment}.size %> Principal & Interest Payments: <%= number_to_currency(        payment.to_f) %></p>
+                            <% end %>
+                          </div>
+                        </li>
+                      </ul>
+                  </div>
+                  <div class="col s12 m4">
+                    <ul class="collapsible" data-collapsible="accordion">
+                        <li>
+                          <div class="collapsible-header"><i class="fa fa-dollar"></i>View Payments</div>
+                          <div class="collapsible-body">
+                            <% mortgage[:payments_worst].uniq.each do |payment|%>
+                              <p><%= mortgage[:payments_worst].select { |p| p == payment}.size %> Principal & Interest Payments: <%=        number_to_currency(payment.to_f) %></p>
+                            <% end %>
+                          </div>
+                        </li>
+                      </ul>
+
+                  </div>
+
+                  <% if mortgage[:PV_payments_matched] != 0 %>
+                    <div class="col s12 m4">
+                        <ul class="collapsible" data-collapsible="accordion">
+                          <li>
+                            <div class="collapsible-header"><i class="fa fa-dollar"></i>View Payments</div>
+                            <div class="collapsible-body">
+                              <% mortgage[:payments_matched].uniq.each do |payment|%>
+                                <p><%= mortgage[:payments_matched].select { |p| p == payment}.size %> Principal & Interest Payments: <%=        number_to_currency(payment.to_f) %></p>
+                              <% end %>
+                            </div>
+                          </li>
+                        </ul>
+                    </div>
+                  <% end %>
+
+                </div>
+
+              </div>
+              <% else %>
+              <div class="card-panel">
+              <div class="row">
+                <h3 class="center brown-text">Fixed Rate Mortgage</h3>
+                <p class="center brown-text"><%= number_to_currency(mortgage[:loan_amount]) %> Loan Amount</p>
+                <div class="col s12 m4">
+                    <h4 class="center brown-text">Normal Case</h4>
+                    <h5 class="center">Present Value of interest: <%= number_to_currency( mortgage[:PV_payments] - mortgage[:loan_amount]) %></h5>
+                    <% mortgage[:payments_normal].uniq.each do |payment|%>
+                    <p class="center light"><%= mortgage[:payments_normal].select { |p| p == payment}.size %> Principal & Interest Payments: <%=        number_to_currency(payment.to_f) %></p>
+                  <%end%>
+                </div>
+              </div>
+            </div>
+          <% end %>
+        <% end %>
       </div>
     </div>
-    <% end %>
-<% end %>
-</div>
-</div>
+  </div>

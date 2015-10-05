@@ -42,6 +42,9 @@ class MortgagesController < ApplicationController
         mortgage[:interest_matched] = mortgage_new.interest_matched
       end
     end
+    if @mortgages.select { |mortgage| mortgage[:adjustable_rate?] == true }.size > 0 && @mortgages.select { |mortgage| mortgage[:adjustable_rate?] == false }.size > 0
+      determine_sale_date
+    end
     render "results"
   end
 
@@ -49,6 +52,11 @@ class MortgagesController < ApplicationController
   end
 
   def determine_sale_date
+    fixed_rate_mortgage = @mortgages.select { |mortgage| mortgage[:adjustable_rate?] == false && mortgage[:payments_normal].first == @fixed_rate_payments.min }.first
+    adjustable_rate_mortgage = @mortgages.select { |mortgage| mortgage[:adjustable_rate?] == true}.first
+    sale = CSP.new
+    sale.var(:term, 5..360)
+    sale.constrain(:term) { |n| (fixed_rate_mortgage[:interest_normal][0..n].inject{|sum,x| sum + x }).round(-3) == (adjustable_rate_mortgage[:interest_normal][0..n].inject{|sum,x| sum + x }).round(-3) }
+    @sale_date = sale.solve[:term]
   end
-
 end
