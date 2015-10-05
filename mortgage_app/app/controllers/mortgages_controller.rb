@@ -24,13 +24,14 @@ class MortgagesController < ApplicationController
     end
     @mortgages.select { |mortgage| mortgage[:adjustable_rate?] == false }.each do |mortgage|
       generate_payments(mortgage)
-      @fixed_rate_payments << mortgage[:payments][0]
+      @fixed_rate_payments << mortgage[:payments_normal][0]
     end
     @mortgages.select { |mortgage| mortgage[:adjustable_rate?] == true }.each do |mortgage|
       mortgage_new = Mortgage.new(mortgage)
       mortgage_new.generate_normal_payments
       mortgage[:payments] = mortgage_new.payments_normal
       mortgage[:PV_payments] = mortgage_new.PV_payments_normal
+      mortgage[:interest_normal] = mortgage_new.interest_normal
       mortgage_new.worst_case_scenario
       mortgage[:PV_payments_worst] = mortgage_new.PV_payments_worst
       mortgage[:payments_worst] = mortgage_new.payments_worst
@@ -38,6 +39,7 @@ class MortgagesController < ApplicationController
         mortgage_new.same_payment_outcome(@fixed_rate_payments.max)
         mortgage[:PV_payments_matched] = mortgage_new.PV_payments_matched
         mortgage[:payments_matched] = mortgage_new.payments_matched
+        mortgage[:interest_matched] = mortgage_new.interest_matched
       end
     end
     render "results"
@@ -46,5 +48,7 @@ class MortgagesController < ApplicationController
   def results
   end
 
+  def determine_sale_date
+  end
 
 end

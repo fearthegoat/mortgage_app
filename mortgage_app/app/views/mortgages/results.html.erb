@@ -77,8 +77,8 @@
         <div class="col s12 m4">
             <h4 class="center brown-text">Normal Case</h4>
             <h5 class="center">Present Value of interest: <%= number_to_currency( mortgage[:PV_payments] - mortgage[:loan_amount]) %></h5>
-            <% mortgage[:payments].uniq.each do |payment|%>
-            <p class="center light"><%= mortgage[:payments].select { |p| p == payment}.size %> Principal & Interest Payments: <%= number_to_currency(payment.to_f) %></p>
+            <% mortgage[:payments_normal].uniq.each do |payment|%>
+            <p class="center light"><%= mortgage[:payments_normal].select { |p| p == payment}.size %> Principal & Interest Payments: <%= number_to_currency(payment.to_f) %></p>
           <%end%>
           </div>
       </div>

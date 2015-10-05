@@ -1,6 +1,6 @@
 class Mortgage
   attr_reader :beginning_principal
-  attr_accessor :payments_made, :initial_yearly_interest_rate, :payments, :remaining_principal, :total_interest_base, :years_before_first_adjustment, :max_rate_adjustment_period,:max_rate_adjustment_term, :yearly_interest_rate, :payments_matched, :PV_payments_matched, :PV_payments_normal, :payments_normal, :PV_payments_worst, :payments_worst
+  attr_accessor :payments_made, :initial_yearly_interest_rate, :payments, :remaining_principal, :total_interest_base, :years_before_first_adjustment, :max_rate_adjustment_period,:max_rate_adjustment_term, :yearly_interest_rate, :payments_matched, :PV_payments_matched, :PV_payments_normal, :payments_normal, :PV_payments_worst, :payments_worst, :interest_matched, :interest_normal
 
   def initialize(mortgage)
     @initial_yearly_interest_rate = mortgage[:initial_rate]
@@ -16,6 +16,7 @@ class Mortgage
     @interest_paid = 0.0
     @payments_made = 0
     @payments = []
+    @interest = []
     @basis_points = []
     @payments_matched = []
     @payments_normal = []
@@ -49,7 +50,7 @@ class Mortgage
   end
 
   def interest_payment
-    (@remaining_principal * monthly_interest_rate)
+    ((@remaining_principal * monthly_interest_rate)).round(2)
   end
 
   def principal_payment(payment)
@@ -62,20 +63,20 @@ class Mortgage
 
   def make_payment(payment)
     @interest_paid += interest_payment
+    @interest << interest_payment
     @remaining_principal = (@remaining_principal - principal_payment(payment)).round(3)
     @payments_made += 1
     @payments << payment
   end
 
   def generate_normal_payments
-    adjustment = @years_before_first_adjustment * 12
+    adjustment = @years_before_first_adjustment * 12 #3 * 12
     current_year = 0
     while @remaining_term_in_months > 0
       current_payment = determine_payment(@yearly_interest_rate, @remaining_term_in_months, @remaining_principal)
       adjustment.times do
-        @payments << current_payment
+        make_payment(current_payment)
       end
-      @remaining_principal = ((@remaining_principal.round(4) * (1 + @yearly_interest_rate/(12*100))**adjustment) - current_payment * ((((1+@yearly_interest_rate/(12*100))**adjustment)-1)/(@yearly_interest_rate/(12*100)))).round(3)
       rate_holder = @basis_points[current_year..(current_year+(adjustment/12)-1)].inject{|sum,x| sum + x }
       rate_holder > @max_rate_adjustment_period ? @yearly_interest_rate += @max_rate_adjustment_period : @yearly_interest_rate += rate_holder
       @yearly_interest_rate = @initial_yearly_interest_rate + @max_rate_adjustment_term if @yearly_interest_rate >= @initial_yearly_interest_rate + @max_rate_adjustment_term
@@ -85,6 +86,7 @@ class Mortgage
     end
     @PV_payments_normal = discount_payments(@payments)
     @payments_normal = @payments
+    @interest_normal = @interest
     reset_variables
   end
 
@@ -109,6 +111,7 @@ class Mortgage
     end
     @PV_payments_matched = discount_payments(@payments)
     @payments_matched = @payments
+    @interest_matched = @interest
     reset_variables
   end
 
@@ -165,6 +168,7 @@ class Mortgage
 
   def reset_variables
     @payments = []
+    @interest = []
     @remaining_principal = @beginning_principal
     @remaining_term_in_months = @term_in_years * 12
     @yearly_interest_rate = @initial_yearly_interest_rate
@@ -173,22 +177,39 @@ end
 
 # for fixed rate mortgages
 def generate_payments(mortgage)
-  payments = []
-  rate = mortgage[:initial_rate]
+  @payments = []
+  @interest = []
+  @rate = mortgage[:initial_rate]
   term_in_months = mortgage[:term]*12
-  principal = mortgage[:loan_amount]
+  @principal = mortgage[:loan_amount]
+  @remaining_principal = mortgage[:loan_amount]
   adjustment = mortgage[:years_before_first_adjustment]*12
-  current_payment = determine_payment(rate, term_in_months, principal)
-  adjustment.times { payments << current_payment }
-  mortgage[:payments] = payments
+  current_payment = determine_payment(@rate, term_in_months, @principal)
+  adjustment.times { make_payment(current_payment) }
+  mortgage[:payments_normal] = @payments
+  mortgage[:interest_normal] = @interest
   discount_payments(mortgage)
+end
+
+def interest_payment
+  (@remaining_principal * (@rate/(12*100))).round(2)
+end
+
+def principal_payment(payment)
+  payment - interest_payment
+end
+
+def make_payment(payment)
+  @interest << interest_payment
+  @remaining_principal = (@remaining_principal - principal_payment(payment)).round(3)
+  @payments << payment
 end
 
 def discount_payments(mortgage)
   yearly_discount_rate = 1.5  #inflation assumed to be 1.5%
   monthly_discount_rate = yearly_discount_rate / 12
   sum_discounted_payments = 0.0
-  mortgage[:payments].each_with_index do |payment, index|
+  mortgage[:payments_normal].each_with_index do |payment, index|
     sum_discounted_payments = sum_discounted_payments + payment/((1 + monthly_discount_rate/100)**index)
   end
   mortgage[:PV_payments] = sum_discounted_payments
