@@ -56,7 +56,7 @@ class MortgagesController < ApplicationController
     adjustable_rate_mortgage = @mortgages.select { |mortgage| mortgage[:adjustable_rate?] == true}.first
     sale = CSP.new
     sale.var(:term, 5..360)
-    sale.constrain(:term) { |n| (fixed_rate_mortgage[:interest_normal][0..n].inject{|sum,x| sum + x }).round(-3) == (adjustable_rate_mortgage[:interest_normal][0..n].inject{|sum,x| sum + x }).round(-3) }
+    sale.constrain(:term) { |n| ((fixed_rate_mortgage[:interest_normal][0..(n)].inject{|sum,x| sum + x }) - (adjustable_rate_mortgage[:interest_normal][0..(n)].inject{|sum,x| sum + x })) > 0 && ((fixed_rate_mortgage[:interest_normal][0..(n+1)].inject{|sum,x| sum + x }) - (adjustable_rate_mortgage[:interest_normal][0..(n+1)].inject{|sum,x| sum + x })) < 0}
     @sale_date = sale.solve[:term]
   end
 end
