@@ -5,7 +5,7 @@
         <div class="card-panel">
           <h2 class="center brown-text">Summary</h2>
         <% if @sale_date %>
-          <p>Sale Date: <%= @sale_date/12 %> years</p>
+          <p>Sale Date: <%= (@sale_date/12.0).round(2) %> years</p>
           <%= line_chart @mortgages.first[:interest_normal], discrete: true, library: {backgroundColor: "#eee", title: "Graph of Change-in Cash Position"} %>
         <% end %>
         </div>
