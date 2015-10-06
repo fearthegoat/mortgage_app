@@ -27,57 +27,6 @@
           </div>
         </div>
         <div class="row" id="form_start">
-          <!-- <div class="input-field col s12 m4">
-            <input id="fixed_rate" class="validate" placeholder="i.e: 3.75" step=".125" min="1" max="15" type="number" name="mortgage[rate][]">
-            <label for="fixed_rate" class="active">Interest Rate (APR)</label>
-          </div>
-          <div class="input-field col s12 m4 offset-m1">
-            <input id="fixed_term" class="validate" placeholder="i.e.: 30" step="5" min="5" max="30" type="number" name="mortgage[term][]">
-            <label for="fixed_term" class="active">Term (years)</label>
-          </div>
-          <input id="years_before_adjustment" type="hidden" value ="0" name="mortgage[years_before_first_adjustment][]">
-          <input id="max_rate_adjustment_term" type="hidden" value ="0" name="mortgage[max_rate_adjustment_term][]">
-          <input id="max_rate_adjustment_period" type="hidden" value ="0" name="mortgage[max_rate_adjustment_period][]">
-          <input id="years_between_adjustments" type="hidden" value ="0" name="mortgage[years_between_adjustments"][]">
-        </div> -->
-        <!-- <div class="row">
-          <div class="input-field col s12 m4">
-            <input id="fixed_rate" class="validate" placeholder="i.e: 3.75" step=".125" min="1" max="15" type="number" name="mortgage[rate][]">
-            <label for="fixed_rate" class="active">Interest Rate (APR)</label>
-          </div>
-          <div class="input-field col s12 m4 offset-m1">
-            <input id="fixed_term" class="validate" placeholder="i.e.: 30" step="5" min="5" max="30" type="number" name="mortgage[term][]">
-            <label for="fixed_term" class="active">Term (years)</label>
-          </div>
-          <input id="years_before_adjustment" type="hidden" value ="0" name="mortgage[years_before_adjustment][]">
-          <input id="max_rate_adjustment" type="hidden" value ="0" name="mortgage[max_rate_adjustment][]">
-        </div>
-        <div class="row">
-          <div class="input-field col s12 m2">
-            <input id="adjustable_rate" class="validate" placeholder="i.e: 3.75" step=".125" min="1" max="15" type="number" name="mortgage[rate][]">
-            <label for="adjustable_rate" class="active">Interest Rate (APR)</label>
-          </div>
-          <div class="input-field col s12 m2">
-            <input id="adjustable_term" class="validate" placeholder="i.e.: 30" step="5" min="5" max="30" type="number" name="mortgage[term][]">
-            <label for="adjustable_term" class="active">Term (years)</label>
-          </div>
-          <div class="input-field col s12 m2">
-            <input id="years_before_adjustment" class="validate" placeholder="i.e.: 5" step="1" min="1" max="30" type="number" name="mortgage[years_before_adjustment][]">
-            <label for="years_before_adjustment" class="active">Years Before Adjustment(years)</label>
-          </div>
-          <div class="input-field col s12 m2">
-            name="mortgage[max_rate_adjustment_period][]">
-            <label for="max_rate_adjustment" class="active">Max Rate Adjustment, Each Period</label>
-          </div>
-          <div class="input-field col s12 m2">
-            <input id="max_rate_adjustment_term" class="validate" placeholder="i.e.: 3" step=".125" min="1" max="10" type="number" name="mortgage[max_rate_adjustment_term][]">
-            <label for="max_rate_adjustment_term" class="active">Max Rate Adjustment for Term</label>
-          </div>
-          <div class="input-field col s12 m2">
-            <input id="years_between_adjustments" class="validate" placeholder="i.e.: 1" step="1" min="1" max="15" type="number" name="mortgage[years_between_adjustments][]">
-            <label for="years_between_adjustments" class="active">Years Between Rate Adjustments</label>
-          </div>
-        </div> -->
         </div>
         <div class="row">
           <div class="input-field col m12 l2">
@@ -93,7 +42,9 @@
  <div class="card blue-grey darken-1">
       <div class="card-content white-text">
           <h1>Methodology</h1>
-    <p class="flow-text">Rates for ARMs are determined using a probabilty distribution where the spectrum of possible outcomes begins at 2.5% and peaks at 15%.  The most likely outcomes are between rates of 4-6% and a linear distribution from those points to the lowest/highest possible rates, therefore the probability distribution is a trapezoid with the plateau between 4 and 6 and the height of 13.793.  Depending on the current rate, the area below/above that rate is determined.  A number is randomly generated and subtracted from the area below the incoming rate.  This number is then assumed to be basis points, and those are then multiplied by the years between the past adjustment, since we should expect greater volatility over a longer span of time. </p>
+          <hr></hr>
+    <p class="flow-text">Rates for ARMs are determined using a probabilty distribution where the spectrum of possible outcomes begins at 2.5% and peaks at 15%.  The most likely outcomes are between rates of 2.5% & 6%.  Depending on the current rate, the area below/above that rate is determined.  A 1..100 number is randomly generated and subtracted from the area below the incoming rate.  This number is then assumed to be basis points adjustment for that year.  The adjustments are summed if the ARM has adjustment periods of longer than one year.</p>
+    <img class="responsive-img" src="assets/trapezoid.png">
         <span class="card-title"></span>
         <ul>
           <li></li>

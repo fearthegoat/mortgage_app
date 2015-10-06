@@ -7,8 +7,8 @@ class MortgagesController < ApplicationController
     @mortgages = []
     @interest_rates = []
     @fixed_rate_payments = []
+    @compared_mortgages = []
     random_seed = Random.new_seed
-    # @max_term = params[:mortgage][:term].max
     params[:mortgage][:rate].each_with_index do |rate, index|
       mortgage_new = Hash.new(0)
       mortgage_new[:loan_amount] = params[:mortgage][:loan].to_d
@@ -45,6 +45,14 @@ class MortgagesController < ApplicationController
     if @mortgages.select { |mortgage| mortgage[:adjustable_rate?] == true }.size > 0 && @mortgages.select { |mortgage| mortgage[:adjustable_rate?] == false }.size > 0
       determine_sale_date
     end
+    generate_charts
+    render "results"
+  end
+
+  def results
+  end
+
+  def generate_charts
     @chart_interest_payment = []
     @chart_cumulative_interest = []
     @mortgages.each do |mortgage|
@@ -60,16 +68,13 @@ class MortgagesController < ApplicationController
       mortgage_hash.merge!(name: mortgage[:adjustable_rate?] ? "Adjustable Rate Mortgage" : "Fixed Rate Mortgage")
       @chart_cumulative_interest << mortgage_hash
     end
-
-    render "results"
-  end
-
-  def results
   end
 
   def determine_sale_date
     fixed_rate_mortgage = @mortgages.select { |mortgage| mortgage[:adjustable_rate?] == false && mortgage[:payments_normal].first == @fixed_rate_payments.min }.first
     adjustable_rate_mortgage = @mortgages.select { |mortgage| mortgage[:adjustable_rate?] == true}.first
+    @compared_mortgages << fixed_rate_mortgage
+    @compared_mortgages << adjustable_rate_mortgage
     sale = CSP.new
     sale.var(:term, 5..360)
     sale.constrain(:term) { |n| ((fixed_rate_mortgage[:interest_normal][0..(n)].inject{|sum,x| sum + x }) - (adjustable_rate_mortgage[:interest_normal][0..(n)].inject{|sum,x| sum + x })) > 0 && ((fixed_rate_mortgage[:interest_normal][0..(n+1)].inject{|sum,x| sum + x }) - (adjustable_rate_mortgage[:interest_normal][0..(n+1)].inject{|sum,x| sum + x })) < 0}
