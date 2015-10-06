@@ -1,16 +1,18 @@
 <div class="section-results">
   <div class="my-container">
     <div class = "row">
-      <div class = "col s12 m3">
+      <div class = "col s12 m5">
         <div class="card-panel">
           <h2 class="center brown-text">Summary</h2>
         <% if @sale_date %>
-          <p>Sale Date: <%= (@sale_date/12.0).round(2) %> years</p>
-          <%= line_chart @mortgages.first[:interest_normal], discrete: true, library: {backgroundColor: "#eee", title: "Graph of Change-in Cash Position"} %>
+          <h4><%= (@sale_date/12.0).round(2) %> years</h4>
+          <p>If you plan on selling your home before <%= (@sale_date/12.0).round(2) %> years then you should choose the Adjustable Rate Mortgage, otherwise choose the Fixed Rate Mortgage.</p>
+          <%= line_chart @chart_cumulative_interest, discrete: true, library: {backgroundColor: "#eee", title: "Nominal Interest Paid"} %>
+          <%= line_chart @chart_interest_payment, discrete: true, library: {backgroundColor: "#eee", title: "Nominal Interest Payments Over Time"} %>
         <% end %>
         </div>
       </div>
-      <div class = "col s12 m9">
+      <div class = "col s12 m7">
         <% @mortgages.each_with_index do |mortgage, index| %>
             <% if mortgage[:adjustable_rate?] %>
               <div class="card-panel">

@@ -45,6 +45,22 @@ class MortgagesController < ApplicationController
     if @mortgages.select { |mortgage| mortgage[:adjustable_rate?] == true }.size > 0 && @mortgages.select { |mortgage| mortgage[:adjustable_rate?] == false }.size > 0
       determine_sale_date
     end
+    @chart_interest_payment = []
+    @chart_cumulative_interest = []
+    @mortgages.each do |mortgage|
+      mortgage[:cumulative_interest] = mortgage[:interest_normal].cumulative_sum
+      mortgage_hash = Hash.new
+      mortgage_data_hash = Hash[((0..mortgage[:interest_normal].size).to_a).zip(mortgage[:interest_normal])]
+      mortgage_hash.merge!(data: mortgage_data_hash)
+      mortgage_hash.merge!(name: mortgage[:adjustable_rate?] ? "Adjustable Rate Mortgage" : "Fixed Rate Mortgage")
+      @chart_interest_payment << mortgage_hash
+      mortgage_hash = Hash.new
+      mortgage_data_hash = Hash[((0..mortgage[:cumulative_interest].size).to_a).zip(mortgage[:cumulative_interest])]
+      mortgage_hash.merge!(data: mortgage_data_hash)
+      mortgage_hash.merge!(name: mortgage[:adjustable_rate?] ? "Adjustable Rate Mortgage" : "Fixed Rate Mortgage")
+      @chart_cumulative_interest << mortgage_hash
+    end
+
     render "results"
   end
 
@@ -60,3 +76,4 @@ class MortgagesController < ApplicationController
     @sale_date = sale.solve[:term]
   end
 end
+
