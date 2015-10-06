@@ -176,7 +176,7 @@ class Mortgage
 end
 
 class Array
-  def
+  def cumulative_sum
     sum = 0
     self.map{|x| sum += x}
   end
