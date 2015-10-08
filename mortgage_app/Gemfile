@@ -12,6 +12,8 @@ gem "materialize-sass"
 gem "chartkick"
 gem "font-awesome-rails"
 gem "autoprefixer-rails"
+gem 'mechanize'
+gem "nokogiri"
 
 # Use Capistrano for deployment
 # gem 'capistrano-rails', group: :development
@@ -21,4 +23,3 @@ group :development, :test do
   gem 'web-console', '~> 2.0'
   gem 'spring'
 end
-

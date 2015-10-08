@@ -60,12 +60,12 @@ class MortgagesController < ApplicationController
       mortgage_hash = Hash.new
       mortgage_data_hash = Hash[((0..mortgage[:interest_normal].size).to_a).zip(mortgage[:interest_normal])]
       mortgage_hash.merge!(data: mortgage_data_hash)
-      mortgage_hash.merge!(name: mortgage[:adjustable_rate?] ? "Adjustable Rate Mortgage" : "Fixed Rate Mortgage")
+      mortgage_hash.merge!(name: mortgage[:adjustable_rate?] ? "#{mortgage[:years_before_first_adjustment]}/#{mortgage[:years_between_adjustments]} ARM" : "#{mortgage[:initial_rate]}% Fixed Rate")
       @chart_interest_payment << mortgage_hash
       mortgage_hash = Hash.new
       mortgage_data_hash = Hash[((0..mortgage[:cumulative_interest].size).to_a).zip(mortgage[:cumulative_interest])]
       mortgage_hash.merge!(data: mortgage_data_hash)
-      mortgage_hash.merge!(name: mortgage[:adjustable_rate?] ? "Adjustable Rate Mortgage" : "Fixed Rate Mortgage")
+      mortgage_hash.merge!(name: mortgage[:adjustable_rate?] ? "#{mortgage[:years_before_first_adjustment]}/#{mortgage[:years_between_adjustments]} ARM" : "#{mortgage[:initial_rate]}% Fixed Rate")
       @chart_cumulative_interest << mortgage_hash
     end
   end
