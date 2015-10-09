@@ -56,7 +56,7 @@ $(document).ready(function() {
         <label for="years_before_adjustment" class="active">Years Before 1st Adjustment</label> \
         </div> \
         <div class="input-field col m12 l2"> \
-        <input id="max_rate_adjustment" class="validate" placeholder="i.e.: 2" step=".125" min="1" max="5" type="number" name="mortgage[max_rate_adjustment_period][]"> \
+        <input id="max_rate_adjustment" class="validate" placeholder="i.e.: 2" step=".125" min="1" max="10" type="number" name="mortgage[max_rate_adjustment_period][]"> \
         <label for="max_rate_adjustment" class="active">Max Rate Adjustment, Each Period</label> \
         </div> \
         <div class="input-field col m12 l2"> \
