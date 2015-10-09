@@ -22,6 +22,7 @@ class MortgagesController < ApplicationController
       mortgage_new[:years_between_adjustments] = params[:mortgage][:years_between_adjustments][index].to_i
       @mortgages << mortgage_new
     end
+    #Rate.order(created_at: :desc).first
     @mortgages.select { |mortgage| mortgage[:adjustable_rate?] == false }.each do |mortgage|
       generate_payments(mortgage)
       @fixed_rate_payments << mortgage[:payments_normal][0]

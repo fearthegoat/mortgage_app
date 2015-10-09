@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150909034657) do
+ActiveRecord::Schema.define(version: 20151009034152) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -23,6 +23,18 @@ ActiveRecord::Schema.define(version: 20150909034657) do
     t.float    "highest_payment",    default: 0.0
     t.datetime "created_at",                       null: false
     t.datetime "updated_at",                       null: false
+  end
+
+  create_table "rates", force: :cascade do |t|
+    t.integer  "term"
+    t.float    "initial_rate"
+    t.float    "max_rate_adjustment_period",    default: 0.0
+    t.float    "max_rate_adjustment_term",      default: 0.0
+    t.integer  "years_before_first_adjustment", default: 0
+    t.integer  "years_between_adjustments",     default: 0
+    t.boolean  "adjustable_rate?",              default: false
+    t.datetime "created_at",                                    null: false
+    t.datetime "updated_at",                                    null: false
   end
 
 end

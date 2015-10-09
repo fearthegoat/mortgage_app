@@ -10,8 +10,4 @@ task rate_fetcher: :environment do
 
   Rate.create(initial_rate: rate_float, term: term)
 
-
-
-  #Rate.order(created_at: :desc).first
-
 end
