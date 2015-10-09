@@ -9,6 +9,7 @@ class MortgagesController < ApplicationController
     @fixed_rate_payments = []
     @compared_mortgages = []
     random_seed = Random.new_seed
+    add_database_mortgage_to_params
     params[:mortgage][:rate].each_with_index do |rate, index|
       mortgage_new = Hash.new(0)
       mortgage_new[:loan_amount] = params[:mortgage][:loan].to_d
@@ -22,7 +23,6 @@ class MortgagesController < ApplicationController
       mortgage_new[:years_between_adjustments] = params[:mortgage][:years_between_adjustments][index].to_i
       @mortgages << mortgage_new
     end
-    #Rate.order(created_at: :desc).first
     @mortgages.select { |mortgage| mortgage[:adjustable_rate?] == false }.each do |mortgage|
       generate_payments(mortgage)
       @fixed_rate_payments << mortgage[:payments_normal][0]
@@ -80,6 +80,16 @@ class MortgagesController < ApplicationController
     sale.var(:term, 5..360)
     sale.constrain(:term) { |n| ((fixed_rate_mortgage[:interest_normal][0..(n)].inject{|sum,x| sum + x }) - (adjustable_rate_mortgage[:interest_normal][0..(n)].inject{|sum,x| sum + x })) > 0 && ((fixed_rate_mortgage[:interest_normal][0..(n+1)].inject{|sum,x| sum + x }) - (adjustable_rate_mortgage[:interest_normal][0..(n+1)].inject{|sum,x| sum + x })) < 0}
     @sale_date = sale.solve[:term]
+  end
+
+  def add_database_mortgage_to_params
+    database = Rate.order(created_at: :desc).first
+    params[:mortgage][:rate] << database.initial_rate
+    params[:mortgage][:term] << database.term
+    params[:mortgage][:years_before_first_adjustment] << database.years_before_first_adjustment
+    params[:mortgage][:max_rate_adjustment_period] << database.max_rate_adjustment_period
+    params[:mortgage][:max_rate_adjustment_term] << database.max_rate_adjustment_term
+    params[:mortgage][:years_between_adjustments] << database.years_between_adjustments
   end
 end
 

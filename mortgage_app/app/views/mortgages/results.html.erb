@@ -7,9 +7,9 @@
         <% if @sale_date %>
           <h4><%= (@sale_date/12.0).round(2) %> years</h4>
           <p>If you plan on selling your home before <%= (@sale_date/12.0).round(2) %> years then you should choose the <%= @compared_mortgages[-1][:years_before_first_adjustment] %>/<%= @compared_mortgages[-1][:years_between_adjustments] %> ARM, otherwise choose the <%= @compared_mortgages[0][:initial_rate]%>% Fixed Rate Mortgage.</p>
+          <% end %>
           <%= line_chart @chart_cumulative_interest, discrete: true, library: {backgroundColor: "#eee", title: "Nominal Interest Paid"} %>
           <%= line_chart @chart_interest_payment, discrete: true, library: {backgroundColor: "#eee", title: "Nominal Interest Payments Over Time"} %>
-        <% end %>
         </div>
       </div>
       <div class = "col s12 m7">
@@ -84,12 +84,14 @@
               <% else %>
               <div class="card-panel">
               <div class="row">
-                <h3 class="center brown-text">Fixed Rate Mortgage</h3>
-                <p class="center brown-text"><%= number_to_currency(mortgage[:loan_amount]) %> Loan Amount</p>
+                <h4 class="center brown-text"><%= index == @mortgages.size - 1 ? "Today's Navy Federal C.U. Fixed Rate" : "Fixed Rate Mortgage" %></h4>
+                <p class="col s12 m4 center brown-text"><%= number_to_currency(mortgage[:loan_amount]) %> Loan Amount</p>
+                <p class="col s12 m4 center brown-text"><%= mortgage[:initial_rate] %>% Rate</p>
+                <p class="col s12 m4 center brown-text"><%= mortgage[:term] %> Year Term</p>
                 <div class="col s12 m4">
                     <h5 class="center">Present Value of interest: <%= number_to_currency( mortgage[:PV_payments] - mortgage[:loan_amount]) %></h5>
                     <% mortgage[:payments_normal].uniq.each do |payment|%>
-                    <p class="center light"><%= mortgage[:payments_normal].select { |p| p == payment}.size %> Principal & Interest Payments: <%=        number_to_currency(payment.to_f) %></p>
+                    <p class="center light"><%= mortgage[:payments_normal].select { |p| p == payment}.size %> Principal & Interest Payments: <%= number_to_currency(payment.to_f) %></p>
                   <%end%>
                 </div>
               </div>
