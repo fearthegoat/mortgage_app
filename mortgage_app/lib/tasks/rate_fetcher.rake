@@ -5,9 +5,9 @@ task rate_fetcher: :environment do
 
   term = 30
 
-  rate = noko_page.css('tr:contains("#{term} Yr Conforming") td:eq(3)').text
+  rate = noko_page.css('tr:contains("30 Yr Conforming") td:eq(3)').text
   rate_float = rate.to_f
-
+  puts "#{rate_float}"
   Rate.create(initial_rate: rate_float, term: term)
 
 end
