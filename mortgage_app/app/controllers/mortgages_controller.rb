@@ -30,7 +30,7 @@ class MortgagesController < ApplicationController
     @mortgages.select { |mortgage| mortgage[:adjustable_rate?] == true }.each do |mortgage|
       mortgage_new = Mortgage.new(mortgage)
       mortgage_new.generate_normal_payments
-      mortgage[:payments] = mortgage_new.payments_normal
+      mortgage[:payments_normal] = mortgage_new.payments_normal
       mortgage[:PV_payments] = mortgage_new.PV_payments_normal
       mortgage[:interest_normal] = mortgage_new.interest_normal
       mortgage_new.worst_case_scenario
@@ -56,6 +56,7 @@ class MortgagesController < ApplicationController
   def generate_charts
     @chart_interest_payment = []
     @chart_cumulative_interest = []
+    @chart_payment = []
     @mortgages.each do |mortgage|
       mortgage[:cumulative_interest] = mortgage[:interest_normal].cumulative_sum
       mortgage_hash = Hash.new
@@ -68,6 +69,11 @@ class MortgagesController < ApplicationController
       mortgage_hash.merge!(data: mortgage_data_hash)
       mortgage_hash.merge!(name: mortgage[:adjustable_rate?] ? "#{mortgage[:years_before_first_adjustment]}/#{mortgage[:years_between_adjustments]} ARM" : "#{mortgage[:initial_rate]}% Fixed Rate")
       @chart_cumulative_interest << mortgage_hash
+      mortgage_hash = Hash.new
+      mortgage_data_hash = Hash[((0..mortgage[:payments_normal].size).to_a).zip(mortgage[:payments_normal])]
+      mortgage_hash.merge!(data: mortgage_data_hash)
+      mortgage_hash.merge!(name: mortgage[:adjustable_rate?] ? "#{mortgage[:years_before_first_adjustment]}/#{mortgage[:years_between_adjustments]} ARM" : "#{mortgage[:initial_rate]}% Fixed Rate")
+      @chart_payment << mortgage_hash
     end
   end
 
