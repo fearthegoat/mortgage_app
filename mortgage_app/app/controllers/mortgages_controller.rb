@@ -10,6 +10,10 @@ class MortgagesController < ApplicationController
     @compared_mortgages = []
     random_seed = Random.new_seed
     add_database_mortgage_to_params
+    @tax_rate = (1/5000000) * params[:mortgage][:loan] + 0.14  # linear tax rate, y = mx + b
+    @tax_rate_array = []
+    @n = 0
+    generate_taxes
     params[:mortgage][:rate].each_with_index do |rate, index|
       mortgage_new = Hash.new(0)
       mortgage_new[:loan_amount] = params[:mortgage][:loan].to_d
@@ -96,6 +100,15 @@ class MortgagesController < ApplicationController
     params[:mortgage][:max_rate_adjustment_period] << database.max_rate_adjustment_period
     params[:mortgage][:max_rate_adjustment_term] << database.max_rate_adjustment_term
     params[:mortgage][:years_between_adjustments] << database.years_between_adjustments
+  end
+
+  def generate_taxes
+    return if n == 30
+    max_tax_rate = 35
+    12.times {@tax_rate_array << @tax_rate} # yearly change in tax rate vice monthly
+    @tax_rate += max_tax_rate / (1 + (max_tax_rate/@tax_rate)-1)* Math.exp(-0.007*n)
+    @n += 1
+    generate_taxes
   end
 end
 

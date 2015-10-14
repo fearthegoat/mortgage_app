@@ -8,9 +8,9 @@
           <h4><%= (@sale_date/12.0).round(2) %> years</h4>
           <p>If you plan on selling your home before <%= (@sale_date/12.0).round(2) %> years then you should choose the <%= @compared_mortgages[-1][:years_before_first_adjustment] %>/<%= @compared_mortgages[-1][:years_between_adjustments] %> ARM, otherwise choose the <%= @compared_mortgages[0][:initial_rate]%>% Fixed Rate Mortgage.</p>
           <% end %>
-          <%= line_chart @chart_cumulative_interest, discrete: true, library: {backgroundColor: "#eee", title: "Interest Paid (nominal)"} %>
+          <%= line_chart @chart_cumulative_interest, discrete: true, library: {backgroundColor: "#eee", title: "Cumulative Interest Paid (nominal)"} %>
           <%= line_chart @chart_payment, discrete: true, library: {backgroundColor: "#eee", title: "Interest & Principal Payment Over Time (nominal)"} %>
-          <%= line_chart @chart_interest_payment, discrete: true, library: {backgroundColor: "#eee", title: "Interest Payments Over Time (nominal)"} %>
+          <%= line_chart @chart_interest_payment, discrete: true, library: {backgroundColor: "#eee", title: "Interest Payments Over Time (nominal)" } %>
         </div>
       </div>
       <div class = "col s12 m7">
