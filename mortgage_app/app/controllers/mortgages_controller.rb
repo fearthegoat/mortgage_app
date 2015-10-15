@@ -10,9 +10,6 @@ class MortgagesController < ApplicationController
     @compared_mortgages = []
     random_seed = Random.new_seed
     add_database_mortgage_to_params
-    @tax_rate = (1/5000000) * params[:mortgage][:loan] + 0.14  # linear tax rate, y = mx + b
-    @tax_rate_array = []
-    @n = 0
     generate_taxes
     params[:mortgage][:rate].each_with_index do |rate, index|
       mortgage_new = Hash.new(0)
@@ -37,6 +34,7 @@ class MortgagesController < ApplicationController
       mortgage[:payments_normal] = mortgage_new.payments_normal
       mortgage[:PV_payments] = mortgage_new.PV_payments_normal
       mortgage[:interest_normal] = mortgage_new.interest_normal
+      mortgage[:PV_interest_tax] = mortgage_new.PV_interest_tax
       mortgage_new.worst_case_scenario
       mortgage[:PV_payments_worst] = mortgage_new.PV_payments_worst
       mortgage[:payments_worst] = mortgage_new.payments_worst
@@ -103,12 +101,20 @@ class MortgagesController < ApplicationController
   end
 
   def generate_taxes
-    return if n == 30
-    max_tax_rate = 35
-    12.times {@tax_rate_array << @tax_rate} # yearly change in tax rate vice monthly
-    @tax_rate += max_tax_rate / (1 + (max_tax_rate/@tax_rate)-1)* Math.exp(-0.007*n)
+    @tax_rate = (1/5000000.0) * params[:mortgage][:loan].to_f + 0.14  # linear tax rate, y = mx + b
+    @tax_rate = 0.33 if @tax_rate > 0.33
+    @n = 0
+    $tax_rate_array = []
+    generate_tax_array
+  end
+
+  def generate_tax_array
+    return if @n == 30
+    max_tax_rate = 0.33 # 33% marginal tax rate
+    12.times {$tax_rate_array << @tax_rate} # yearly change in tax rate vice monthly
+    @tax_rate = max_tax_rate / (1 + (((max_tax_rate/@tax_rate)-1)* Math.exp(-0.004*@n))) # equation is an adapted population growth equatino.  0.004 is a constant to achieve a plausible curve
     @n += 1
-    generate_taxes
+    generate_tax_array
   end
 end
 
