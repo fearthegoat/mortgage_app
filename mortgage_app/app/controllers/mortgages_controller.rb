@@ -48,6 +48,8 @@ class MortgagesController < ApplicationController
     if @mortgages.select { |mortgage| mortgage[:adjustable_rate?] == true }.size > 0 && @mortgages.select { |mortgage| mortgage[:adjustable_rate?] == false }.size > 0
       determine_sale_date
     end
+    @PV_interest_tax_array = @mortgages.map { |mortgage| mortgage[:PV_interest_tax]}
+    @PV_payments_array = @mortgages.map { |mortgage| mortgage[:PV_payments]}
     generate_charts
     render "results"
   end

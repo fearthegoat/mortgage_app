@@ -198,7 +198,7 @@ def generate_payments(mortgage)
   mortgage[:payments_normal] = @payments
   mortgage[:interest_normal] = @interest
   interest_tax = $tax_rate_array.each_with_index.map { |rate, index| @payments[index]-((rate)*@interest[index])}
-  mortgage[:PV_interest_tax] = discount_payments(interest_tax) - @beginning_principal
+  mortgage[:PV_interest_tax] = discount_payments(interest_tax) - @principal
   mortgage[:PV_payments] = discount_payments(@payments)
 end
 
