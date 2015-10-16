@@ -1,53 +1,128 @@
-<section id="game">
-  <form class="col m12 l10" id="new_mortgage" action="/mortgages" accept-charset="UTF-8" method="post">
-  <input name="utf8" type="hidden" value="✓">
-  <input type="hidden" name="authenticity_token" value="">
-    <div class="card blue-grey darken-1">
-      <div class="card-content white-text">
-          <h2 >Adjustable & Fixed Rate Mortgage Calculator</h2>
-    <p class="flow-text">An all inclusive comparative calculator that uses inflation, probabilities and tax writeoffs to give the average person the knowledge to make a rational decision on the most important financial aspect of their life. </p>
-        <span class="card-title"></span>
-        <ul>
-          <li></li>
-        </ul>
-      </div>
+<div class="navbar-fixed">
+  <nav>
+    <div class="nav-wrapper blue-grey darken-3">
+      <a href="#!" class="brand-logo hide-on-med-and-down">Adjustable & Fixed Rate Mortgage Calculator</a>
+      <a href="#!" class="brand-logo hide-on-large-only">Mortgage Calculator</a>
+      <a href="#" data-activates="mobile-demo" class="button-collapse"><i class="material-icons">menu</i></a>
+      <ul class="right hide-on-med-and-down">
+        <li><a href="#methodology">Methodology</a></li>
+        <li><a href="#common_myths">Common Myths</a></li>
+        <li><a href="#creator">Creator</a></li>
+      </ul>
+      <ul class="side-nav" id="mobile-demo">
+        <li><a href="#methodology">Methodology</a></li>
+        <li><a href="#common_myths">Common Myths</a></li>
+        <li><a href="#creator">Creator</a></li>
+      </ul>
     </div>
+  </nav>
+</div>
+  <div class="container-index">
+    <section id="calculate">
+      <form class="col m12 l10" id="new_mortgage" action="/mortgages" accept-charset="UTF-8" method="post">
+        <input name="utf8" type="hidden" value="✓">
+        <input type="hidden" name="authenticity_token" value="">
+        <div class="card blue-grey darken-1">
+          <div class="card-content white-text">
+            <p class="flow-text">An all inclusive comparative calculator that uses inflation, probabilities and tax writeoffs to give the average person the knowledge to make a rational decision on the most important financial aspect of their life. </p>
+            <span class="card-title"></span>
+            <ul>
+              <li></li>
+            </ul>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col l3 s12 hide-on-large-only">
+            <div class="card">
+              <div class="card-content">
+                <h5>How to Compare</h5>
+                <ol class="collection">
+                  <li class="collection-item">Click on type of mortgage</li>
+                  <li class="collection-item">Enter Data</li>
+                  <li class="collection-item">Click "Calculate"</li>
+                </ol>
+              </div>
+            </div>
+          </div>
+          <div class="col m9 s12">
+           <div class="card">
+            <div class="card-content white-text">
+              <a href="javascript:void(0);" id="add_fixed_rate" class="btn flow-text">Fixed Rate Mortgage</a>
+              <a href="javascript:void(0);" id="add_adjustable_rate" class="btn flow-text">Adjustable Rate Mortgage</a>
+            </div>
+            <div class="row">
+              <div class="input-field col m12 l4">
+                <i class="fa fa-usd" style="margin-left:-10px;"></i>
+                <input id="loan" style="padding-right:10px;width:95%;" class="validate flow-text" value="200000" step="5000" min="0" type="number" name="mortgage[loan]">
+                <label for="loan" class="active flow-text"><i class="fa fa-money"></i> Loan Amount</label>
+              </div>
+            </div>
+            <div class="row" id="form_start">
+            </div>
+            <div class="row">
+              <div class="input-field col m12 l2">
+                <button class="btn waves-effect waves-light" type="submit" name="commit" id="calculate" ><i class="fa fa-calculator">Calculate</i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col l3 s12 hide-on-med-and-down">
+          <div class="card">
+            <div class="card-content">
+              <h5>How to Compare</h5>
+              <ol class="collection">
+                <li class="collection-item">Click on type of mortgage</li>
+                <li class="collection-item">Enter Data</li>
+                <li class="collection-item">Click "Calculate"</li>
+              </ol>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+  </section>
+  <section id ="methodology">
     <div class="row">
-      <div class="col m12 l10">
-        <div class="row">
-          <a href="javascript:void(0);" id="add_fixed_rate" class="btn flow-text">Fixed Rate Mortgage</a>
-          <a href="javascript:void(0);" id="add_adjustable_rate" class="btn flow-text">Adjustable Rate Mortgage</a>
-        </div>
-        <div class="row">
-          <div class="input-field col m12 l4">
-            <i class="fa fa-usd" style="margin-left:-10px;"></i>
-            <input id="loan" style="padding-right:10px;width:95%;" class="validate flow-text" value="200000" step="5000" min="0" type="number" name="mortgage[loan]">
-            <label for="loan" class="active flow-text"><i class="fa fa-money"></i> Loan Amount</label>
+      <div class="col s12 m6">
+        <div class="card">
+          <div class="card-image">
+            <%= image_tag("math.jpg", alt: "File Name Fancy", class: "img-responsive")%>
+            <span class="card-title">Interest Rates</span>
+          </div>
+          <div class="card-content">
+            <p>Rates for ARMs are determined using a probabilty distribution where the spectrum of possible outcomes begins at 2.5% and peaks at 15%. The most likely outcomes are between rates of 2.5% & 6%. Depending on the current rate, the area below/above that rate is determined. A 1..100 number is randomly generated and subtracted from the area below the incoming rate. This number is then assumed to be basis points adjustment for that year. The adjustments are summed if the ARM has adjustment periods of longer than one year.</p>
+          </div>
+          <div class="card-action">
+            <!-- Modal Trigger -->
+            <a class="waves-effect waves-light btn modal-trigger white-text" href="#modal1">View Graphic</a>
+            <!-- Modal Structure -->
+            <div id="modal1" class="modal">
+              <div class="modal-content">
+                <%= image_tag("trapezoid.png", alt: "File Name Fancy", class: "img-responsive")%>
+              </div>
+              <div class="modal-footer">
+                <a href="#!" class=" modal-action modal-close waves-effect waves-green btn-flat">Agree</a>
+              </div>
+            </div>
           </div>
         </div>
-        <div class="row" id="form_start">
-        </div>
-        <div class="row">
-          <div class="input-field col m12 l2">
-            <button class="btn waves-effect waves-light" type="submit" name="commit" id="calculate" ><i class="fa fa-calculator">Calculate</i>
-            </button>
+      </div>
+      <div class="col s12 m6">
+        <div class="card">
+          <div class="card-image">
+            <%= image_tag("Taxes.jpg", alt: "File Name Fancy", class: "img-responsive")%>
+            <span class="picture card-title">Tax Withholdings</span>
           </div>
+          <div class="card-content">
+            <p>Taxes are calculated based on the amount of loan you are seeking. The higher the loan, the higher your effective tax rate. As you progress throughout the life of your loan, your effective tax rate is assumed to increase since income generally increases over time. The lowest rate possible is 14% and the highest rate possible is 33%.</p>
+          </div>
+<!--           <div class="card-action">
+            <a href="#">This is a link</a>
+          </div> -->
         </div>
       </div>
-      <div class="col m12 l2">
-      </div>
-    </div>
-  </form>
- <div class="card blue-grey darken-1">
-      <div class="card-content white-text">
-          <h1>Methodology</h1>
-          <hr></hr>
-    <p class="flow-text">Rates for ARMs are determined using a probabilty distribution where the spectrum of possible outcomes begins at 2.5% and peaks at 15%.  The most likely outcomes are between rates of 2.5% & 6%.  Depending on the current rate, the area below/above that rate is determined.  A 1..100 number is randomly generated and subtracted from the area below the incoming rate.  This number is then assumed to be basis points adjustment for that year.  The adjustments are summed if the ARM has adjustment periods of longer than one year.</p>
-    <%= image_tag("trapezoid.png", alt: "File Name Fancy", class: "img-responsive")%>
-        <span class="card-title"></span>
-        <ul>
-          <li></li>
-        </ul>
-      </div>
-    </div>
-</section>
+    </section>
+  </div>
+
+

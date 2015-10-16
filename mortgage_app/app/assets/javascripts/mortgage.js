@@ -1,4 +1,6 @@
 $(document).ready(function() {
+  $(".button-collapse").sideNav();
+  $('.modal-trigger').leanModal();
   var add_fixed_rate, add_adjustable_rate, max_fields, wrapper, x;
   max_fields = 6;
   wrapper = $('#form_start');
@@ -74,5 +76,12 @@ $(document).ready(function() {
     else {
       return alert("Only six patrons can be signed up on a single booking.  If your party is larger, either contact us or sign-up on separate bookings.  Thank you.")
     };
+  });
+});
+
+$(function(){
+  $("#nav a").click(function(e){
+    e.preventDefault();
+    $('html,body').scrollTo(this.hash,this.hash);
   });
 });

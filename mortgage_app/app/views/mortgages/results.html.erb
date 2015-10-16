@@ -1,19 +1,31 @@
 <div class="section-results">
   <div class="my-container">
     <div class = "row">
-      <div class = "col s12 m5">
+      <div class = "col s12 m6">
         <div class="card-panel">
           <h2 class="center brown-text">Summary</h2>
         <% if @sale_date %>
           <h4><%= (@sale_date/12.0).round(2) %> years</h4>
           <p>If you plan on selling your home before <%= (@sale_date/12.0).round(2) %> years then you should choose the <%= @compared_mortgages[-1][:years_before_first_adjustment] %>/<%= @compared_mortgages[-1][:years_between_adjustments] %> ARM, otherwise choose the <%= @compared_mortgages[0][:initial_rate]%>% Fixed Rate Mortgage.</p>
           <% end %>
+          <ol class="collection">
+          <h5>Total Payments <span class="interest">(<%= Date.today.year %> Dollars)</h5>
+          <% @mortgages.sort { |a,b| a[:PV_payments] <=> b[:PV_payments]}.each do |m| %>
+            <li class="collection-item"><%= m[:initial_rate]%>% Rate: <%= number_to_currency(m[:PV_payments]) %> </li>
+          <% end %>
+          </ol>
+          <ol class="collection">
+          <h5>Interest with tax benefit <span class="interest">(<%= Date.today.year %> Dollars)</h5>
+          <% @mortgages.sort { |a,b| a[:PV_interest_tax] <=> b[:PV_interest_tax]}.each do |m| %>
+            <li class="collection-item"><%= m[:initial_rate]%>% Rate: <%= number_to_currency(m[:PV_interest_tax]) %></li>
+          <% end %>
+          </ol>
           <%= line_chart @chart_cumulative_interest, discrete: true, library: {backgroundColor: "#eee", title: "Cumulative Interest Paid (nominal)"} %>
           <%= line_chart @chart_payment, discrete: true, library: {backgroundColor: "#eee", title: "Interest & Principal Payment Over Time (nominal)"} %>
           <%= line_chart @chart_interest_payment, discrete: true, library: {backgroundColor: "#eee", title: "Interest Payments Over Time (nominal)" } %>
         </div>
       </div>
-      <div class = "col s12 m7">
+      <div class = "col s12 m6">
         <% @mortgages.each_with_index do |mortgage, index| %>
             <% if mortgage[:adjustable_rate?] %>
               <div class="card-panel">
@@ -91,7 +103,7 @@
               <div class="row">
                 <h4 class="center brown-text"><%= index == @mortgages.size - 1 ? "Today's Navy Federal C.U. Fixed Rate" : "Fixed Rate Mortgage" %></h4>
                 <p class="col s12 m4 center brown-text"><%= number_to_currency(mortgage[:loan_amount]) %> Loan Amount</p>
-                <p class="col s12 m4 center brown-text"><%= mortgage[:initial_rate] %>% Rate</p>
+                <p class="col s12 m4 center brown-text"><%= mortgage[:initial_rate] %>% Fixed Rate</p>
                 <p class="col s12 m4 center brown-text"><%= mortgage[:term] %> Year Term</p>
                 <div class="col s12 m4">
                     <p class="center">Present Value of interest: <%= number_to_currency( mortgage[:PV_payments] - mortgage[:loan_amount]) %></p>
