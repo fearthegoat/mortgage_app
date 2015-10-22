@@ -1,6 +1,6 @@
 class Mortgage
   attr_reader :beginning_principal
-  attr_accessor :payments_made, :initial_yearly_interest_rate, :payments, :remaining_principal, :total_interest_base, :years_before_first_adjustment, :max_rate_adjustment_period,:max_rate_adjustment_term, :yearly_interest_rate, :payments_matched, :PV_payments_matched, :PV_payments_normal, :payments_normal, :PV_payments_worst, :payments_worst, :interest_matched, :interest_normal, :interest_tax, :PV_interest_tax
+  attr_accessor :payments_made, :initial_yearly_interest_rate, :payments, :remaining_principal, :total_interest_base, :years_before_first_adjustment, :max_rate_adjustment_period,:max_rate_adjustment_term, :yearly_interest_rate, :payments_matched, :PV_payments_matched, :PV_payments_normal, :payments_normal, :PV_payments_worst, :payments_worst, :interest_matched, :interest_normal, :interest_tax, :PV_interest_tax, :matched
 
   def initialize(mortgage)
     @initial_yearly_interest_rate = mortgage[:initial_rate]
@@ -23,6 +23,7 @@ class Mortgage
     @PV_payments_normal = 0.0
     @PV_payments_matched = 0.0
     @random_generator = Random.new(mortgage[:random_seed])
+    # @fixed_rate_PV_tax = @fixed_rate_PV_interest.min && generate_match_payments unless @fixed_rate_PV_interest.size == 0
 
     if mortgage[:years_before_first_adjustment] <= 3
       @estimated_teaser_discount = 1
@@ -89,6 +90,40 @@ class Mortgage
     @interest_normal = @interest
     @interest_tax = $tax_rate_array.each_with_index.map { |rate, index| @payments[index]-((rate)*@interest[index])}
     @PV_interest_tax = discount_payments(@interest_tax) - @beginning_principal
+    reset_variables
+  end
+
+  def match_payments(fixed_PV_interest)
+    @matching_payments = []
+    @matching_PV_interest = []
+    @matching_payments << (@payments_normal[0])*1.40.round(2) << (@payments_normal[0])*1.60.round(2)
+    @matching_payments.each { |current_payment| generate_PV_match(current_payment)}
+    slope = (@matching_PV_interest[1] - @matching_PV_interest[0]) / (@matching_payments[1] - @matching_payments[0]) #slope
+    @matched = (((fixed_PV_interest - @matching_PV_interest[1])/slope) + @matching_payments[1])
+  end
+
+  def generate_PV_match(current_payment)
+    adjustment = @years_before_first_adjustment * 12 #3 * 12
+    current_year = 0
+    while @remaining_principal > 1
+      counter = 0
+      while @remaining_principal > 1 && counter < adjustment
+        make_payment(current_payment)
+        counter += 1
+      end
+      rate_holder = @basis_points[current_year..(current_year+(adjustment/12)-1)].inject{|sum,x| sum + x }
+      rate_holder > @max_rate_adjustment_period ? @yearly_interest_rate += @max_rate_adjustment_period : @yearly_interest_rate += rate_holder
+      @yearly_interest_rate = @initial_yearly_interest_rate + @max_rate_adjustment_term if @yearly_interest_rate >= @initial_yearly_interest_rate + @max_rate_adjustment_term
+      @remaining_term_in_months -= adjustment
+      current_year += adjustment/12
+      adjustment = @years_between_adjustments * 12
+    end
+    @payments_normal = @payments
+    @interest_normal = @interest
+    interest_tax = @payments.each_with_index.map do |payment, index|
+      payment-($tax_rate_array[index]*@interest[index])
+    end
+    @matching_PV_interest << (discount_payments(interest_tax) - @beginning_principal)
     reset_variables
   end
 

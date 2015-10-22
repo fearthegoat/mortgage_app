@@ -7,6 +7,7 @@ class MortgagesController < ApplicationController
     @mortgages = []
     @interest_rates = []
     @fixed_rate_payments = []
+    @fixed_rate_PV_interest_tax = []
     @compared_mortgages = []
     random_seed = Random.new_seed
     add_database_mortgage_to_params
@@ -27,6 +28,7 @@ class MortgagesController < ApplicationController
     @mortgages.select { |mortgage| mortgage[:adjustable_rate?] == false }.each do |mortgage|
       generate_payments(mortgage)
       @fixed_rate_payments << mortgage[:payments_normal][0]
+      @fixed_rate_PV_interest_tax << mortgage[:PV_interest_tax]
     end
     @mortgages.select { |mortgage| mortgage[:adjustable_rate?] == true }.each do |mortgage|
       mortgage_new = Mortgage.new(mortgage)
@@ -43,6 +45,8 @@ class MortgagesController < ApplicationController
         mortgage[:PV_payments_matched] = mortgage_new.PV_payments_matched
         mortgage[:payments_matched] = mortgage_new.payments_matched
         mortgage[:interest_matched] = mortgage_new.interest_matched
+        mortgage_new.match_payments(@fixed_rate_PV_interest_tax.min)
+        mortgage[:matched] = mortgage_new.matched
       end
     end
     if @mortgages.select { |mortgage| mortgage[:adjustable_rate?] == true }.size > 0 && @mortgages.select { |mortgage| mortgage[:adjustable_rate?] == false }.size > 0

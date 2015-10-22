@@ -9,6 +9,14 @@
           <p>If you plan on selling your home before <%= (@sale_date/12.0).round(2) %> years then you should choose the <%= @compared_mortgages[-1][:years_before_first_adjustment] %>/<%= @compared_mortgages[-1][:years_between_adjustments] %> ARM, otherwise choose the <%= @compared_mortgages[0][:initial_rate]%>% Fixed Rate Mortgage.</p>
           <% end %>
           <ol class="collection">
+          <h5>ARM fixed payment to match best Fixed Rate Mortgage (in BETA testing!)</h5>
+          <% @mortgages.sort { |a,b| a[:matched] <=> b[:matched]}.each do |m| %>
+            <% if m[:adjustable_rate?] %>
+            <li class="collection-item"><%= m[:years_before_first_adjustment] %>/<%= m[:years_between_adjustments] %> ARM: <%= number_to_currency(m[:matched]) %> Fixed Payment</li>
+            <% end %>
+          <% end %>
+          </ol>
+          <ol class="collection">
           <h5>Total Payments <span class="interest">(<%= Date.today.year %> Dollars)</h5>
           <% @mortgages.sort { |a,b| a[:PV_payments] <=> b[:PV_payments]}.each do |m| %>
             <li class="collection-item"><%= m[:initial_rate]%>% Rate: <%= number_to_currency(m[:PV_payments]) %> </li>
