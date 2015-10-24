@@ -19,13 +19,13 @@
           <ol class="collection">
           <h5>Total Payments <span class="interest">(<%= Date.today.year %> Dollars)</h5>
           <% @mortgages.sort { |a,b| a[:PV_payments] <=> b[:PV_payments]}.each do |m| %>
-            <li class="collection-item"><%= m[:initial_rate]%>% Rate: <%= number_to_currency(m[:PV_payments]) %> </li>
+            <li class="collection-item"><%= m[:initial_rate]%>% <%= m[:adjustable_rate?] ? "#{m[:years_before_first_adjustment]}/#{m[:years_between_adjustments]} ARM" : "Fixed Rate" %>:  <%= number_to_currency(m[:PV_payments]) %> </li>
           <% end %>
           </ol>
           <ol class="collection">
           <h5>Interest with tax benefit <span class="interest">(<%= Date.today.year %> Dollars)</h5>
           <% @mortgages.sort { |a,b| a[:PV_interest_tax] <=> b[:PV_interest_tax]}.each do |m| %>
-            <li class="collection-item"><%= m[:initial_rate]%>% Rate: <%= number_to_currency(m[:PV_interest_tax]) %></li>
+            <li class="collection-item"><%= m[:initial_rate]%>% <%= m[:adjustable_rate?] ? "#{m[:years_before_first_adjustment]}/#{m[:years_between_adjustments]} ARM" : "Fixed Rate" %>:  <%= number_to_currency(m[:PV_interest_tax]) %></li>
           <% end %>
           </ol>
           <%= line_chart @chart_cumulative_interest, discrete: true, library: {backgroundColor: "#eee", title: "Cumulative Interest Paid (nominal)"} %>
