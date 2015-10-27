@@ -8,4 +8,12 @@ def title(title = nil)
   end
 end
 
+def description(description = nil)
+  if description.present?
+    content_for :description, description
+  else
+    content_for?(:description) ? content_for(:description) : "ARM Calculator"
+  end
+end
+
 end
